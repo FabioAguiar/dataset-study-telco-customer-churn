@@ -1,6 +1,0 @@
-flag,outliers_count
-charge_gap_is_outlier,684
-tenure_is_outlier,0
-MonthlyCharges_is_outlier,0
-TotalCharges_is_outlier,0
-charge_gap_log1p_is_outlier,0

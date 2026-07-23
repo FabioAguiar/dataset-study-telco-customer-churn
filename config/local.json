@@ -1,7 +1,0 @@
-{
-  "text_features": true,
-  "export_processed": true,
-  "scale_numeric": true,
-  "scaler": "minmax",
-  "normalize_categories": true
-}
