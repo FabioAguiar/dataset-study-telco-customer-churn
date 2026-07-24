@@ -18,6 +18,7 @@ dependencies = [
 notebook = [
     "ipykernel>=6.0",
     "jupyterlab>=4.0",
+    "matplotlib>=3.8",
 ]
 test = [
     "pytest>=8.0",
