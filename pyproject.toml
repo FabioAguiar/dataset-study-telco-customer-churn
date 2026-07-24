@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataset-study-telco-customer-churn"
+version = "0.1.0"
+description = "Reproducible Telco Customer Churn dataset study"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+    "kagglehub>=0.3",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+notebook = [
+    "ipykernel>=6.0",
+    "jupyterlab>=4.0",
+]
+test = [
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["scripts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -16,7 +16,7 @@ class ProjectContextError(RuntimeError):
     """Raised when the dataset study project cannot be located."""
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ProjectContext:
     """Resolved and validated context for a dataset study project."""
 
@@ -28,20 +28,29 @@ class ProjectContext:
         return self.root.name
 
     def path(self, *parts: str | Path) -> Path:
-        """Build an absolute path inside the project."""
-        return self.root.joinpath(*parts)
+        """Build and validate an absolute path inside the project root."""
+        candidate = self.root.joinpath(*parts).expanduser().resolve()
+
+        try:
+            candidate.relative_to(self.root)
+        except ValueError as exc:
+            rendered = Path(*parts).as_posix() if parts else "."
+            raise ValueError(
+                f"Project path escapes the project root: {rendered}"
+            ) from exc
+
+        return candidate
 
     def display(self, path: str | Path | None = None) -> str:
         """Return a safe project-relative path for notebook output.
 
         Absolute parent directories such as ``/home/user`` or
-        ``C:\\Users\\user`` are never displayed.
+        ``C:/Users/user`` are never displayed.
         """
         if path is None:
             return self.name
 
         candidate = Path(path).expanduser()
-
         if not candidate.is_absolute():
             candidate = self.root / candidate
 
@@ -53,15 +62,15 @@ class ProjectContext:
         try:
             relative_path = candidate.relative_to(self.root)
         except ValueError:
-            # Avoid exposing an absolute path outside the project.
+            # Never expose an absolute path outside the project.
             return candidate.name
 
-        # Use forward slashes only for presentation. Filesystem operations
-        # continue using pathlib and remain operating-system aware.
+        # Normalize presentation while filesystem operations remain
+        # operating-system aware through pathlib.
         return relative_path.as_posix()
 
     def require_file(self, *parts: str | Path) -> Path:
-        """Return a required project file or raise a clear error."""
+        """Return a required project file or raise a concise error."""
         file_path = self.path(*parts)
 
         if not file_path.is_file():
@@ -73,7 +82,7 @@ class ProjectContext:
         return file_path
 
     def require_directory(self, *parts: str | Path) -> Path:
-        """Return a required project directory or raise a clear error."""
+        """Return a required project directory or raise a concise error."""
         directory_path = self.path(*parts)
 
         if not directory_path.is_dir():
@@ -93,13 +102,14 @@ def _candidate_roots(start: str | Path | None = None) -> Iterator[Path]:
     if configured_root:
         seeds.append(Path(configured_root).expanduser())
 
-    # This file is expected at:
-    # project/scripts/project_context.py
-    module_location = Path(__file__).resolve()
-    seeds.append(module_location.parents[1])
-
+    # Prefer the caller's working location when it belongs to a study project.
     start_path = Path(start).expanduser() if start else Path.cwd()
     seeds.append(start_path)
+
+    # Editable installation maps this module back to project/scripts/ and acts
+    # as a fallback when Jupyter starts outside the repository.
+    module_location = Path(__file__).resolve()
+    seeds.append(module_location.parents[1])
 
     observed: set[Path] = set()
 
@@ -121,8 +131,8 @@ def find_project_root(start: str | Path | None = None) -> Path:
     raise ProjectContextError(
         "Dataset study project root not found. "
         f"Expected the project marker '{PROJECT_MARKER.as_posix()}'. "
-        f"You may define the {PROJECT_ROOT_ENV} environment variable "
-        "with the project root when running the notebook externally."
+        f"Install the project with 'python -m pip install -e .' or define "
+        f"the {PROJECT_ROOT_ENV} environment variable."
     )
 
 
@@ -130,9 +140,6 @@ def get_project_context(
     start: str | Path | None = None,
 ) -> ProjectContext:
     """Resolve, validate, and return the current project context."""
-    root = find_project_root(start)
-
-    context = ProjectContext(root=root)
+    context = ProjectContext(root=find_project_root(start))
     context.require_file("scripts", "download_data.py")
-
     return context

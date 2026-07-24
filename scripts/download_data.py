@@ -1,55 +1,20 @@
 """Reusable dataset acquisition helpers for dataset-study repositories.
 
-This module keeps operational download logic outside notebooks while leaving
-study-specific choices visible in the notebook, such as the source identifier,
-destination directory, and selected data file.
-
-Supported sources
------------------
-- Kaggle datasets through ``kagglehub``;
-- direct HTTP, HTTPS, or FTP file URLs through Python's standard library.
-
-Recommended notebook usage
---------------------------
-Import the high-level acquisition function after the project root has been
-added to ``sys.path``::
-
-    from pathlib import Path
-    from scripts.download_data import acquire_kaggle_dataset
-
-    DATASET_HANDLE = "blastchar/telco-customer-churn"
-    RAW_DATA_RELATIVE_DIR = Path("data/raw/telco-customer-churn")
-
-    acquisition = acquire_kaggle_dataset(
-        handle=DATASET_HANDLE,
-        destination=RAW_DATA_RELATIVE_DIR,
-    )
-
-    RAW_DATA_DIR = acquisition.destination
-
-    print(f"Dataset source: {acquisition.source_reference}")
-    print(f"Raw data directory: {RAW_DATA_DIR}")
-    for file_path in acquisition.relative_files:
-        print(f"- {file_path}")
-
-The command-line interface remains available::
-
-    python scripts/download_data.py kaggle \
-        blastchar/telco-customer-churn \
-        --destination data/raw/telco-customer-churn
-
-    python scripts/download_data.py url \
-        "ftp://example.org/path/dataset.csv" \
-        --destination data/raw/my-dataset
+Study-specific choices such as source identifiers and destination paths are
+intentionally passed by callers. The module supports Kaggle datasets and
+direct HTTP, HTTPS, or FTP file downloads.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import logging
 import os
 import shutil
 import sys
+import warnings
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final, Literal
@@ -57,13 +22,12 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import unquote, urlparse
 from urllib.request import Request, urlopen
 
+
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 DEFAULT_RAW_DATA_DIR: Final[Path] = PROJECT_ROOT / "data" / "raw"
-DEFAULT_KAGGLE_HANDLE: Final[str] = "blastchar/telco-customer-churn"
-DEFAULT_TELCO_DESTINATION: Final[Path] = (
-    DEFAULT_RAW_DATA_DIR / "telco-customer-churn"
+SUPPORTED_URL_SCHEMES: Final[frozenset[str]] = frozenset(
+    {"http", "https", "ftp"}
 )
-SUPPORTED_URL_SCHEMES: Final[frozenset[str]] = frozenset({"http", "https", "ftp"})
 DEFAULT_CHUNK_SIZE: Final[int] = 1024 * 1024
 DEFAULT_TIMEOUT_SECONDS: Final[int] = 120
 
@@ -76,58 +40,56 @@ class DatasetDownloadError(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class DatasetAcquisition:
-    """Describe the materialized result of one dataset acquisition.
-
-    Attributes
-    ----------
-    source_kind:
-        Acquisition mechanism: ``kaggle`` or ``url``.
-    source_reference:
-        Kaggle handle or direct source URL used for the acquisition.
-    destination:
-        Absolute directory in which the raw source files are stored.
-    resolved_path:
-        Path returned by the underlying acquisition implementation.
-    files:
-        Absolute visible files found in the destination. Internal hidden files,
-        such as ``kagglehub`` completion markers, are excluded.
-    project_root:
-        Repository root used to resolve relative destinations.
-    """
+    """Describe the materialized result of one dataset acquisition."""
 
     source_kind: SourceKind
     source_reference: str
     destination: Path
     resolved_path: Path
     files: tuple[Path, ...]
-    project_root: Path = PROJECT_ROOT
+    project_root: Path
+
+    @property
+    def display_destination(self) -> str:
+        """Return a project-relative destination for safe presentation."""
+        try:
+            return self.destination.relative_to(self.project_root).as_posix()
+        except ValueError:
+            return self.destination.name
 
     @property
     def relative_files(self) -> tuple[str, ...]:
-        """Return project-relative POSIX paths when possible."""
-        relative: list[str] = []
+        """Return safe project-relative POSIX file paths."""
+        rendered: list[str] = []
 
         for file_path in self.files:
             try:
                 display_path = file_path.relative_to(self.project_root)
             except ValueError:
-                display_path = file_path
-            relative.append(display_path.as_posix())
+                rendered.append(file_path.name)
+            else:
+                rendered.append(display_path.as_posix())
 
-        return tuple(relative)
+        return tuple(rendered)
 
     def require_files(self, pattern: str) -> tuple[Path, ...]:
-        """Return files matching a glob pattern or raise a clear error."""
+        """Return acquired files matching a filename or glob pattern."""
+        normalized_pattern = pattern.strip()
+        if not normalized_pattern:
+            raise ValueError("File selection pattern cannot be empty.")
+
         matches = tuple(
             file_path
             for file_path in self.files
-            if file_path.match(pattern) or file_path.name == pattern
+            if file_path.match(normalized_pattern)
+            or file_path.name == normalized_pattern
         )
 
         if not matches:
             raise FileNotFoundError(
-                f"No acquired file matches '{pattern}' in {self.destination}. "
-                f"Available files: {list(self.relative_files)}"
+                f"No acquired file matches '{normalized_pattern}' in "
+                f"{self.display_destination}. Available files: "
+                f"{list(self.relative_files)}"
             )
 
         return matches
@@ -137,7 +99,7 @@ class DatasetAcquisition:
         matches = self.require_files(pattern)
 
         if len(matches) != 1:
-            rendered = [path.as_posix() for path in matches]
+            rendered = [path.name for path in matches]
             raise RuntimeError(
                 f"Expected exactly one file matching '{pattern}', "
                 f"found {len(matches)}: {rendered}"
@@ -151,14 +113,23 @@ def resolve_project_path(
     *,
     project_root: str | Path = PROJECT_ROOT,
 ) -> Path:
-    """Resolve a path relative to the repository root when needed."""
+    """Resolve a path relative to the supplied project root."""
     root = Path(project_root).expanduser().resolve()
     candidate = Path(path).expanduser()
 
     if not candidate.is_absolute():
         candidate = root / candidate
 
-    return candidate.resolve()
+    candidate = candidate.resolve()
+
+    try:
+        candidate.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(
+            "Dataset destination must remain inside the project root."
+        ) from exc
+
+    return candidate
 
 
 def discover_dataset_files(
@@ -166,16 +137,13 @@ def discover_dataset_files(
     *,
     include_hidden: bool = False,
 ) -> tuple[Path, ...]:
-    """Return deterministic recursive file paths from a dataset directory.
-
-    Hidden files and files under hidden directories are excluded by default.
-    This keeps implementation metadata such as ``.complete`` out of notebook
-    acquisition summaries.
-    """
+    """Return deterministic recursive file paths from a dataset directory."""
     root = Path(directory).expanduser().resolve()
 
     if not root.is_dir():
-        raise FileNotFoundError(f"Dataset directory not found: {root}")
+        raise FileNotFoundError(
+            f"Dataset directory not found: {root.name}"
+        )
 
     files: list[Path] = []
 
@@ -184,7 +152,9 @@ def discover_dataset_files(
             continue
 
         relative_parts = path.relative_to(root).parts
-        if not include_hidden and any(part.startswith(".") for part in relative_parts):
+        if not include_hidden and any(
+            part.startswith(".") for part in relative_parts
+        ):
             continue
 
         files.append(path.resolve())
@@ -192,15 +162,54 @@ def discover_dataset_files(
     return tuple(sorted(files, key=lambda item: item.as_posix()))
 
 
+@contextmanager
+def _suppress_console_output(enabled: bool):
+    """Temporarily suppress third-party output, warnings, and logging.
+
+    The implementation is cross-platform because ``os.devnull`` resolves to
+    the operating system's null device (for example, ``/dev/null`` on POSIX
+    systems and ``NUL`` on Windows).
+    """
+    if not enabled:
+        yield
+        return
+
+    previous_logging_disable_level = logging.root.manager.disable
+
+    with (
+        open(os.devnull, "w", encoding="utf-8") as output_sink,
+        warnings.catch_warnings(),
+    ):
+        # kagglehub imports tqdm.auto, which can emit this warning when the
+        # optional Jupyter widget integration is not installed.
+        warnings.filterwarnings(
+            "ignore",
+            message=r"IProgress not found.*",
+        )
+
+        logging.disable(logging.CRITICAL)
+
+        try:
+            with (
+                redirect_stdout(output_sink),
+                redirect_stderr(output_sink),
+            ):
+                yield
+        finally:
+            logging.disable(previous_logging_disable_level)
+
+
 def _validate_filename(filename: str) -> str:
-    """Reject empty or path-like filenames supplied for direct downloads."""
+    """Reject empty or path-like filenames for direct downloads."""
     candidate = filename.strip()
 
     if not candidate or candidate in {".", ".."}:
         raise ValueError("The destination filename cannot be empty.")
 
     if Path(candidate).name != candidate:
-        raise ValueError("The destination filename must not contain directories.")
+        raise ValueError(
+            "The destination filename must not contain directories."
+        )
 
     return candidate
 
@@ -227,13 +236,15 @@ def _verify_sha256(file_path: Path, expected_sha256: str | None) -> None:
     if len(expected) != 64 or any(
         character not in "0123456789abcdef" for character in expected
     ):
-        raise ValueError("sha256 must contain exactly 64 hexadecimal characters.")
+        raise ValueError(
+            "sha256 must contain exactly 64 hexadecimal characters."
+        )
 
     observed = calculate_sha256(file_path)
 
     if observed != expected:
         raise DatasetDownloadError(
-            f"SHA-256 mismatch for {file_path}: "
+            f"SHA-256 mismatch for {file_path.name}: "
             f"expected {expected}, observed {observed}."
         )
 
@@ -244,41 +255,53 @@ def download_kaggle_dataset(
     *,
     dataset_file: str | None = None,
     force: bool = False,
+    show_progress: bool = False,
     project_root: str | Path = PROJECT_ROOT,
 ) -> Path:
-    """Download a Kaggle dataset or one dataset file.
+    """Download a Kaggle dataset or one file into a project directory.
 
-    This is the low-level Kaggle operation. Notebook code should normally call
-    :func:`acquire_kaggle_dataset`, which also validates and inventories the
-    resulting files.
+    Parameters
+    ----------
+    show_progress:
+        When ``True``, preserve ``kagglehub`` progress and diagnostic output.
+        The default suppresses third-party console output so absolute local
+        paths are not exposed in notebook results.
     """
     normalized_handle = handle.strip()
 
     if not normalized_handle or "/" not in normalized_handle:
-        raise ValueError("Kaggle handle must use the 'owner/dataset' format.")
+        raise ValueError(
+            "Kaggle handle must use the 'owner/dataset' format."
+        )
 
-    output_dir = resolve_project_path(destination, project_root=project_root)
+    output_dir = resolve_project_path(
+        destination,
+        project_root=project_root,
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        import kagglehub
+        # The import itself is kept inside the suppression context because
+        # kagglehub imports tqdm.auto, which may emit notebook widget warnings.
+        with _suppress_console_output(enabled=not show_progress):
+            import kagglehub
+
+            resolved_path = kagglehub.dataset_download(
+                normalized_handle,
+                path=dataset_file,
+                output_dir=str(output_dir),
+                force_download=force,
+            )
     except ImportError as exc:
         raise DatasetDownloadError(
             "kagglehub is not installed in the active Python environment. "
-            "Install it with: python -m pip install kagglehub"
+            "Install the project dependencies with: "
+            "python -m pip install -e ."
         ) from exc
-
-    try:
-        resolved_path = kagglehub.dataset_download(
-            normalized_handle,
-            path=dataset_file,
-            output_dir=str(output_dir),
-            force_download=force,
-        )
     except TypeError as exc:
         raise DatasetDownloadError(
             "The installed kagglehub version does not support output_dir. "
-            "Upgrade it with: python -m pip install --upgrade kagglehub"
+            "Upgrade the project dependencies."
         ) from exc
     except Exception as exc:
         raise DatasetDownloadError(
@@ -289,7 +312,7 @@ def download_kaggle_dataset(
 
     if not result.exists():
         raise DatasetDownloadError(
-            f"kagglehub returned a path that does not exist: {result}"
+            "kagglehub returned a path that does not exist."
         )
 
     return result
@@ -301,9 +324,15 @@ def acquire_kaggle_dataset(
     *,
     dataset_file: str | None = None,
     force: bool = False,
+    show_progress: bool = False,
     project_root: str | Path = PROJECT_ROOT,
 ) -> DatasetAcquisition:
-    """Acquire a Kaggle dataset and return a notebook-friendly result."""
+    """Acquire a Kaggle dataset and return a notebook-friendly result.
+
+    Third-party progress output is hidden by default to avoid exposing
+    absolute paths in notebook output. Set ``show_progress=True`` when
+    interactive download diagnostics are needed.
+    """
     root = Path(project_root).expanduser().resolve()
     output_dir = resolve_project_path(destination, project_root=root)
 
@@ -312,6 +341,7 @@ def acquire_kaggle_dataset(
         destination=output_dir,
         dataset_file=dataset_file,
         force=force,
+        show_progress=show_progress,
         project_root=root,
     )
 
@@ -319,8 +349,8 @@ def acquire_kaggle_dataset(
 
     if not files:
         raise DatasetDownloadError(
-            f"The Kaggle acquisition completed but no visible files were found "
-            f"in {output_dir}."
+            "The Kaggle acquisition completed but no visible files "
+            "were found in the destination directory."
         )
 
     return DatasetAcquisition(
@@ -343,11 +373,7 @@ def download_url_file(
     sha256: str | None = None,
     project_root: str | Path = PROJECT_ROOT,
 ) -> Path:
-    """Download one file from an HTTP, HTTPS, or FTP URL atomically.
-
-    Existing files are reused unless ``force=True``. When ``sha256`` is
-    supplied, both reused and newly downloaded files are validated.
-    """
+    """Download one HTTP, HTTPS, or FTP file atomically."""
     if timeout <= 0:
         raise ValueError("timeout must be greater than zero.")
 
@@ -357,13 +383,17 @@ def download_url_file(
     if scheme not in SUPPORTED_URL_SCHEMES:
         supported = ", ".join(sorted(SUPPORTED_URL_SCHEMES))
         raise ValueError(
-            f"Unsupported URL scheme '{scheme}'. Supported schemes: {supported}."
+            f"Unsupported URL scheme '{scheme}'. "
+            f"Supported schemes: {supported}."
         )
 
     resolved_filename = filename or unquote(Path(parsed.path).name)
     resolved_filename = _validate_filename(resolved_filename)
 
-    output_dir = resolve_project_path(destination, project_root=project_root)
+    output_dir = resolve_project_path(
+        destination,
+        project_root=project_root,
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / resolved_filename
 
@@ -371,7 +401,9 @@ def download_url_file(
         _verify_sha256(output_path, sha256)
         return output_path.resolve()
 
-    temporary_path = output_path.with_name(f".{output_path.name}.part")
+    temporary_path = output_path.with_name(
+        f".{output_path.name}.part"
+    )
     temporary_path.unlink(missing_ok=True)
 
     request: str | Request
@@ -389,13 +421,19 @@ def download_url_file(
             urlopen(request, timeout=timeout) as response,
             temporary_path.open("wb") as target,
         ):
-            shutil.copyfileobj(response, target, length=DEFAULT_CHUNK_SIZE)
+            shutil.copyfileobj(
+                response,
+                target,
+                length=DEFAULT_CHUNK_SIZE,
+            )
 
         _verify_sha256(temporary_path, sha256)
         os.replace(temporary_path, output_path)
     except (HTTPError, URLError, TimeoutError, OSError) as exc:
         temporary_path.unlink(missing_ok=True)
-        raise DatasetDownloadError(f"Download failed for '{url}': {exc}") from exc
+        raise DatasetDownloadError(
+            f"Download failed for '{url}': {exc}"
+        ) from exc
     except Exception:
         temporary_path.unlink(missing_ok=True)
         raise
@@ -427,23 +465,21 @@ def acquire_url_file(
         project_root=root,
     )
 
-    files = discover_dataset_files(output_dir)
-
     return DatasetAcquisition(
         source_kind="url",
         source_reference=url,
         destination=output_dir,
         resolved_path=resolved_path,
-        files=files,
+        files=discover_dataset_files(output_dir),
         project_root=root,
     )
 
 
 def _print_acquisition(acquisition: DatasetAcquisition) -> None:
-    """Render a compact deterministic acquisition summary for the CLI."""
+    """Render a compact deterministic acquisition summary."""
     print(f"Source type: {acquisition.source_kind}")
     print(f"Source: {acquisition.source_reference}")
-    print(f"Destination: {acquisition.destination}")
+    print(f"Destination: {acquisition.display_destination}")
     print("Files:")
 
     for file_path in acquisition.relative_files:
@@ -452,7 +488,7 @@ def _print_acquisition(acquisition: DatasetAcquisition) -> None:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Acquire source datasets into the study repository.",
+        description="Acquire source datasets into a study repository.",
     )
     subparsers = parser.add_subparsers(dest="source", required=True)
 
@@ -462,38 +498,47 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     kaggle_parser.add_argument(
         "handle",
-        nargs="?",
-        default=DEFAULT_KAGGLE_HANDLE,
-        help=f"Kaggle handle (default: {DEFAULT_KAGGLE_HANDLE}).",
+        help="Kaggle dataset handle in owner/dataset form.",
     )
     kaggle_parser.add_argument(
         "--destination",
-        default=str(DEFAULT_TELCO_DESTINATION),
-        help="Output directory, absolute or relative to the repository root.",
+        required=True,
+        help="Project-relative output directory.",
     )
     kaggle_parser.add_argument(
         "--dataset-file",
-        help="Optional path to a single file inside the Kaggle dataset.",
+        help="Optional path to one file inside the Kaggle dataset.",
     )
     kaggle_parser.add_argument(
         "--force",
         action="store_true",
-        help="Download again instead of reusing an existing materialization.",
+        help="Download again instead of reusing an existing result.",
+    )
+    kaggle_parser.add_argument(
+        "--show-progress",
+        action="store_true",
+        help=(
+            "Show kagglehub progress and diagnostic output. "
+            "Disabled by default to avoid exposing absolute local paths."
+        ),
     )
 
     url_parser = subparsers.add_parser(
         "url",
         help="Acquire one file from an HTTP, HTTPS, or FTP URL.",
     )
-    url_parser.add_argument("url", help="Source HTTP, HTTPS, or FTP URL.")
+    url_parser.add_argument(
+        "url",
+        help="Source HTTP, HTTPS, or FTP URL.",
+    )
     url_parser.add_argument(
         "--destination",
-        default=str(DEFAULT_RAW_DATA_DIR),
-        help="Output directory, absolute or relative to the repository root.",
+        required=True,
+        help="Project-relative output directory.",
     )
     url_parser.add_argument(
         "--filename",
-        help="Local filename. Defaults to the final URL path component.",
+        help="Local filename; defaults to the URL path component.",
     )
     url_parser.add_argument(
         "--force",
@@ -504,11 +549,14 @@ def _build_parser() -> argparse.ArgumentParser:
         "--timeout",
         type=int,
         default=DEFAULT_TIMEOUT_SECONDS,
-        help=f"Connection/read timeout in seconds (default: {DEFAULT_TIMEOUT_SECONDS}).",
+        help=(
+            "Connection/read timeout in seconds "
+            f"(default: {DEFAULT_TIMEOUT_SECONDS})."
+        ),
     )
     url_parser.add_argument(
         "--sha256",
-        help="Optional expected SHA-256 checksum for integrity validation.",
+        help="Optional expected SHA-256 checksum.",
     )
 
     return parser
@@ -526,6 +574,7 @@ def main(argv: list[str] | None = None) -> int:
                 destination=args.destination,
                 dataset_file=args.dataset_file,
                 force=args.force,
+                show_progress=args.show_progress,
             )
         else:
             acquisition = acquire_url_file(
@@ -536,7 +585,7 @@ def main(argv: list[str] | None = None) -> int:
                 timeout=args.timeout,
                 sha256=args.sha256,
             )
-    except (DatasetDownloadError, FileNotFoundError, ValueError) as exc:
+    except (DatasetDownloadError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
