@@ -2,9 +2,49 @@
 
 from __future__ import annotations
 
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
+from typing import Final, TypeAlias
 
 import pandas as pd
+from pandas.api.types import (
+    is_bool_dtype,
+    is_complex_dtype,
+    is_datetime64_any_dtype,
+    is_dtype_equal,
+    is_float_dtype,
+    is_integer_dtype,
+    is_numeric_dtype,
+    is_object_dtype,
+    is_string_dtype,
+    is_timedelta64_dtype,
+    pandas_dtype,
+)
+
+
+ExpectedTypeSpec: TypeAlias = str | Collection[str]
+
+_TYPE_FAMILY_ALIASES: Final[dict[str, str]] = {
+    "any": "any",
+    "bool": "boolean",
+    "boolean": "boolean",
+    "category": "categorical",
+    "categorical": "categorical",
+    "complex": "complex",
+    "date": "datetime",
+    "datetime": "datetime",
+    "float": "floating",
+    "floating": "floating",
+    "int": "integer",
+    "integer": "integer",
+    "number": "numeric",
+    "numeric": "numeric",
+    "object": "object",
+    "str": "string",
+    "string": "string",
+    "text": "string",
+    "timedelta": "timedelta",
+}
 
 
 class DataValidationError(ValueError):
@@ -94,6 +134,133 @@ class ObservationUnitReport:
             raise DataValidationError("; ".join(failures) + ".")
 
 
+@dataclass(frozen=True, slots=True)
+class DataTypeReport:
+    """Describe expected and observed data types for dataset columns."""
+
+    checks: pd.DataFrame
+
+    @property
+    def mismatched_columns(self) -> tuple[str, ...]:
+        """Return columns whose observed type does not meet expectations."""
+        return self._columns_with_status("Mismatch")
+
+    @property
+    def undeclared_columns(self) -> tuple[str, ...]:
+        """Return dataset columns without a declared expected type."""
+        return self._columns_with_status("Not declared")
+
+    @property
+    def missing_expected_columns(self) -> tuple[str, ...]:
+        """Return expected columns that are absent from the dataset."""
+        return self._columns_with_status("Missing column")
+
+    @property
+    def has_mismatches(self) -> bool:
+        """Return whether at least one observed type is incompatible."""
+        return bool(self.mismatched_columns)
+
+    @property
+    def has_undeclared_columns(self) -> bool:
+        """Return whether at least one dataset column lacks an expectation."""
+        return bool(self.undeclared_columns)
+
+    @property
+    def has_missing_expected_columns(self) -> bool:
+        """Return whether an expected column is absent from the dataset."""
+        return bool(self.missing_expected_columns)
+
+    @property
+    def is_fully_declared(self) -> bool:
+        """Return whether dataset and expectation columns align exactly."""
+        return not (
+            self.has_undeclared_columns
+            or self.has_missing_expected_columns
+        )
+
+    @property
+    def all_observed_types_match(self) -> bool:
+        """Return whether every assessed observed type matches."""
+        return not self.has_mismatches
+
+    def column_frame(self) -> pd.DataFrame:
+        """Return a copy of the per-column type comparison table."""
+        return self.checks.copy(deep=True)
+
+    def issues_frame(self) -> pd.DataFrame:
+        """Return only mismatches and declaration alignment issues."""
+        return self.checks.loc[
+            self.checks["Status"] != "Match"
+        ].reset_index(drop=True).copy(deep=True)
+
+    def summary_frame(self) -> pd.DataFrame:
+        """Return deterministic counts grouped by validation status."""
+        status_order = [
+            "Match",
+            "Mismatch",
+            "Not declared",
+            "Missing column",
+        ]
+        counts = self.checks["Status"].value_counts()
+
+        return pd.DataFrame(
+            {
+                "Status": status_order,
+                "Column count": [
+                    int(counts.get(status, 0))
+                    for status in status_order
+                ],
+            }
+        )
+
+    def raise_if_invalid(
+        self,
+        *,
+        require_all_columns_declared: bool = True,
+        require_expected_columns_present: bool = True,
+        require_matching_types: bool = True,
+    ) -> None:
+        """Raise one consolidated error for selected type expectations.
+
+        Type mismatches may be intentionally retained during exploratory work.
+        Set ``require_matching_types=False`` to validate only that declarations
+        cover the current dataset schema without blocking on discovered type
+        issues.
+        """
+        failures: list[str] = []
+
+        if require_all_columns_declared and self.has_undeclared_columns:
+            failures.append(
+                "dataset columns without declared expected types: "
+                + ", ".join(self.undeclared_columns)
+            )
+
+        if (
+            require_expected_columns_present
+            and self.has_missing_expected_columns
+        ):
+            failures.append(
+                "declared columns missing from the dataset: "
+                + ", ".join(self.missing_expected_columns)
+            )
+
+        if require_matching_types and self.has_mismatches:
+            failures.append(
+                "columns with incompatible observed types: "
+                + ", ".join(self.mismatched_columns)
+            )
+
+        if failures:
+            raise DataValidationError("; ".join(failures) + ".")
+
+    def _columns_with_status(self, status: str) -> tuple[str, ...]:
+        selected = self.checks.loc[
+            self.checks["Status"] == status,
+            "Column",
+        ]
+        return tuple(str(column) for column in selected)
+
+
 def analyze_observation_unit(
     dataframe: pd.DataFrame,
     identifier: str,
@@ -144,3 +311,240 @@ def analyze_observation_unit(
         duplicated_row_count=int(len(duplicated_rows)),
         duplicated_rows=duplicated_rows,
     )
+
+
+def analyze_data_types(
+    dataframe: pd.DataFrame,
+    expected_types: Mapping[str, ExpectedTypeSpec],
+) -> DataTypeReport:
+    """Compare declared and observed column data types without mutation.
+
+    Expected values may use semantic type families such as ``"numeric"``,
+    ``"integer"``, ``"floating"``, ``"boolean"``, ``"string"``,
+    ``"categorical"``, ``"datetime"``, ``"timedelta"``, ``"object"``,
+    ``"complex"``, or ``"any"``. Exact pandas dtype strings such as
+    ``"int64"``, ``"Int64"``, or ``"datetime64[ns]"`` are also accepted.
+    Multiple accepted types may be supplied as a collection of strings.
+
+    Dataset columns retain their original order. Declared columns that are
+    absent from the DataFrame are appended to the report in declaration order.
+    """
+    normalized_expectations = _normalize_type_expectations(expected_types)
+    rows: list[dict[str, object]] = []
+
+    for column in dataframe.columns:
+        column_name = str(column)
+        series = dataframe[column]
+        observed_dtype = str(series.dtype)
+        observed_type = _infer_observed_type(series)
+        expected = normalized_expectations.get(column_name)
+
+        if expected is None:
+            expected_display = ""
+            status = "Not declared"
+        else:
+            expected_display = " | ".join(expected)
+            status = (
+                "Match"
+                if any(
+                    _series_matches_expected_type(series, candidate)
+                    for candidate in expected
+                )
+                else "Mismatch"
+            )
+
+        rows.append(
+            {
+                "Column": column_name,
+                "Expected type": expected_display,
+                "Observed dtype": observed_dtype,
+                "Observed type": observed_type,
+                "Status": status,
+            }
+        )
+
+    observed_column_names = {str(column) for column in dataframe.columns}
+
+    for column, expected in normalized_expectations.items():
+        if column in observed_column_names:
+            continue
+
+        rows.append(
+            {
+                "Column": column,
+                "Expected type": " | ".join(expected),
+                "Observed dtype": "",
+                "Observed type": "",
+                "Status": "Missing column",
+            }
+        )
+
+    checks = pd.DataFrame(
+        rows,
+        columns=[
+            "Column",
+            "Expected type",
+            "Observed dtype",
+            "Observed type",
+            "Status",
+        ],
+    )
+
+    return DataTypeReport(checks=checks)
+
+
+def _normalize_type_expectations(
+    expected_types: Mapping[str, ExpectedTypeSpec],
+) -> dict[str, tuple[str, ...]]:
+    if not isinstance(expected_types, Mapping):
+        raise TypeError("expected_types must be a mapping by column name.")
+
+    normalized: dict[str, tuple[str, ...]] = {}
+
+    for raw_column, raw_specification in expected_types.items():
+        if not isinstance(raw_column, str):
+            raise TypeError("Expected type column names must be strings.")
+
+        column = raw_column.strip()
+        if not column:
+            raise ValueError("Expected type column names cannot be empty.")
+
+        if column in normalized:
+            raise ValueError(
+                f"Duplicate expected type declaration after normalization: "
+                f"{column}"
+            )
+
+        candidates = _normalize_expected_type_specification(
+            raw_specification,
+            column=column,
+        )
+        normalized[column] = candidates
+
+    return normalized
+
+
+def _normalize_expected_type_specification(
+    specification: ExpectedTypeSpec,
+    *,
+    column: str,
+) -> tuple[str, ...]:
+    if isinstance(specification, str):
+        raw_candidates = [specification]
+    elif isinstance(specification, Collection):
+        raw_candidates = list(specification)
+    else:
+        raise TypeError(
+            f"Expected type declaration for '{column}' must be a string "
+            "or a collection of strings."
+        )
+
+    if not raw_candidates:
+        raise ValueError(
+            f"Expected type declaration for '{column}' cannot be empty."
+        )
+
+    normalized: list[str] = []
+
+    for raw_candidate in raw_candidates:
+        if not isinstance(raw_candidate, str):
+            raise TypeError(
+                f"Expected type candidates for '{column}' must be strings."
+            )
+
+        candidate = raw_candidate.strip()
+        if not candidate:
+            raise ValueError(
+                f"Expected type candidates for '{column}' cannot be empty."
+            )
+
+        _validate_expected_type_candidate(candidate, column=column)
+
+        if candidate not in normalized:
+            normalized.append(candidate)
+
+    return tuple(normalized)
+
+
+def _validate_expected_type_candidate(
+    candidate: str,
+    *,
+    column: str,
+) -> None:
+    if candidate.lower() in _TYPE_FAMILY_ALIASES:
+        return
+
+    try:
+        pandas_dtype(candidate)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"Unsupported expected type '{candidate}' for column "
+            f"'{column}'."
+        ) from exc
+
+
+def _infer_observed_type(series: pd.Series) -> str:
+    dtype = series.dtype
+
+    if isinstance(dtype, pd.CategoricalDtype):
+        return "categorical"
+    if is_bool_dtype(dtype):
+        return "boolean"
+    if is_integer_dtype(dtype):
+        return "integer"
+    if is_float_dtype(dtype):
+        return "floating"
+    if is_complex_dtype(dtype):
+        return "complex"
+    if is_datetime64_any_dtype(dtype):
+        return "datetime"
+    if is_timedelta64_dtype(dtype):
+        return "timedelta"
+    if is_object_dtype(dtype):
+        non_null_values = series.dropna()
+        if non_null_values.empty:
+            return "object"
+        if non_null_values.map(
+            lambda value: isinstance(value, str)
+        ).all():
+            return "string"
+        return "object"
+    if is_string_dtype(dtype):
+        return "string"
+
+    return str(dtype)
+
+
+def _series_matches_expected_type(
+    series: pd.Series,
+    expected: str,
+) -> bool:
+    normalized = expected.lower()
+    family = _TYPE_FAMILY_ALIASES.get(normalized)
+    dtype = series.dtype
+    observed_type = _infer_observed_type(series)
+
+    if family == "any":
+        return True
+    if family == "boolean":
+        return bool(is_bool_dtype(dtype))
+    if family == "integer":
+        return bool(is_integer_dtype(dtype) and not is_bool_dtype(dtype))
+    if family == "floating":
+        return bool(is_float_dtype(dtype))
+    if family == "numeric":
+        return bool(is_numeric_dtype(dtype) and not is_bool_dtype(dtype))
+    if family == "complex":
+        return bool(is_complex_dtype(dtype))
+    if family == "string":
+        return observed_type == "string"
+    if family == "categorical":
+        return isinstance(dtype, pd.CategoricalDtype)
+    if family == "datetime":
+        return bool(is_datetime64_any_dtype(dtype))
+    if family == "timedelta":
+        return bool(is_timedelta64_dtype(dtype))
+    if family == "object":
+        return bool(is_object_dtype(dtype))
+
+    return bool(is_dtype_equal(dtype, pandas_dtype(expected)))
