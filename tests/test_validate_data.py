@@ -3,6 +3,7 @@ import pytest
 
 from scripts.validate_data import (
     DataValidationError,
+    analyze_data_dictionary,
     analyze_data_types,
     analyze_observation_unit,
 )
@@ -207,3 +208,265 @@ def test_data_type_analysis_does_not_modify_source_dataframe() -> None:
 
     pd.testing.assert_frame_equal(dataframe, original)
     assert report.column_frame().loc[0, "Status"] == "Match"
+
+
+
+def test_data_dictionary_report_documents_roles_and_preserves_order() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "customer_id": ["A", "B"],
+            "tenure": [1, 2],
+            "churn": ["No", "Yes"],
+        }
+    )
+
+    report = analyze_data_dictionary(
+        dataframe,
+        {
+            "customer_id": {
+                "description": "Unique customer identifier.",
+                "expected_values": "Unique non-empty string.",
+                "unit": None,
+            },
+            "tenure": {
+                "description": "Customer relationship duration.",
+                "expected_values": "Non-negative whole number.",
+                "unit": "months",
+            },
+            "churn": {
+                "description": "Whether the customer left.",
+                "expected_values": ("No", "Yes"),
+                "unit": None,
+            },
+        },
+        target="churn",
+        identifiers=["customer_id"],
+    )
+
+    assert report.is_complete
+    assert report.undocumented_columns == ()
+    assert report.missing_documented_columns == ()
+
+    checks = report.column_frame()
+    assert list(checks["Column"]) == [
+        "customer_id",
+        "tenure",
+        "churn",
+    ]
+    assert list(checks["Analytical role"]) == [
+        "Identifier",
+        "Candidate feature",
+        "Target",
+    ]
+    assert list(checks["Expected values"]) == [
+        "Unique non-empty string.",
+        "Non-negative whole number.",
+        "No, Yes",
+    ]
+    assert list(checks["Status"]) == [
+        "Documented",
+        "Documented",
+        "Documented",
+    ]
+
+
+def test_data_dictionary_report_tracks_coverage_issues() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "customer_id": ["A", "B"],
+            "value": [1, 2],
+            "target": [0, 1],
+        }
+    )
+
+    report = analyze_data_dictionary(
+        dataframe,
+        {
+            "customer_id": {
+                "description": "Unique identifier.",
+                "expected_values": "Unique string.",
+            },
+            "target": {
+                "description": "Observed outcome.",
+                "expected_values": (0, 1),
+            },
+            "missing_documented": {
+                "description": "Documented but unavailable field.",
+                "expected_values": "Any value.",
+            },
+        },
+        target="target",
+        identifiers=["customer_id"],
+    )
+
+    assert report.undocumented_columns == ("value",)
+    assert report.missing_documented_columns == (
+        "missing_documented",
+    )
+    assert not report.is_complete
+
+    issues = report.issues_frame()
+    assert list(issues["Column"]) == [
+        "value",
+        "missing_documented",
+    ]
+    assert list(issues["Status"]) == [
+        "Not documented",
+        "Missing column",
+    ]
+
+    with pytest.raises(
+        DataValidationError,
+        match="without data dictionary entries: value",
+    ):
+        report.raise_if_invalid()
+
+
+def test_data_dictionary_report_can_validate_selected_requirements() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "customer_id": ["A"],
+            "value": [1],
+            "target": [0],
+        }
+    )
+
+    report = analyze_data_dictionary(
+        dataframe,
+        {
+            "customer_id": {
+                "description": "Unique identifier.",
+                "expected_values": "Unique string.",
+            },
+            "target": {
+                "description": "Observed outcome.",
+                "expected_values": (0, 1),
+            },
+            "future_column": {
+                "description": "Future documented field.",
+                "expected_values": "Any value.",
+            },
+        },
+        target="target",
+        identifiers=["customer_id"],
+    )
+
+    report.raise_if_invalid(
+        require_all_columns_documented=False,
+        require_documented_columns_present=False,
+    )
+
+    with pytest.raises(
+        DataValidationError,
+        match="missing from the dataset: future_column",
+    ):
+        report.raise_if_invalid(
+            require_all_columns_documented=False,
+        )
+
+
+def test_data_dictionary_rejects_invalid_metadata_and_roles() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "customer_id": ["A"],
+            "target": [0],
+        }
+    )
+
+    with pytest.raises(ValueError, match="must define 'description'"):
+        analyze_data_dictionary(
+            dataframe,
+            {
+                "customer_id": {
+                    "expected_values": "Unique string.",
+                },
+                "target": {
+                    "description": "Outcome.",
+                    "expected_values": (0, 1),
+                },
+            },
+            target="target",
+            identifiers=["customer_id"],
+        )
+
+    with pytest.raises(ValueError, match="cannot be empty"):
+        analyze_data_dictionary(
+            dataframe,
+            {
+                "customer_id": {
+                    "description": "",
+                    "expected_values": "Unique string.",
+                },
+                "target": {
+                    "description": "Outcome.",
+                    "expected_values": (0, 1),
+                },
+            },
+            target="target",
+            identifiers=["customer_id"],
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="target column cannot also be an identifier",
+    ):
+        analyze_data_dictionary(
+            dataframe,
+            {},
+            target="target",
+            identifiers=["target"],
+        )
+
+    with pytest.raises(
+        KeyError,
+        match="Declared analytical role columns were not found",
+    ):
+        analyze_data_dictionary(
+            dataframe,
+            {},
+            target="missing_target",
+            identifiers=["customer_id"],
+        )
+
+
+def test_data_dictionary_analysis_does_not_modify_inputs() -> None:
+    dataframe = pd.DataFrame(
+        {
+            "customer_id": ["A", "B"],
+            "target": [0, 1],
+        }
+    )
+    original_dataframe = dataframe.copy(deep=True)
+    dictionary = {
+        "customer_id": {
+            "description": "Unique identifier.",
+            "expected_values": "Unique string.",
+            "unit": None,
+        },
+        "target": {
+            "description": "Observed outcome.",
+            "expected_values": (0, 1),
+            "unit": None,
+        },
+    }
+    original_dictionary = {
+        column: dict(metadata)
+        for column, metadata in dictionary.items()
+    }
+
+    report = analyze_data_dictionary(
+        dataframe,
+        dictionary,
+        target="target",
+        identifiers=["customer_id"],
+    )
+
+    external_checks = report.column_frame()
+    external_checks.loc[0, "Description"] = "Changed outside report"
+
+    pd.testing.assert_frame_equal(dataframe, original_dataframe)
+    assert dictionary == original_dictionary
+    assert (
+        report.column_frame().loc[0, "Description"]
+        == "Unique identifier."
+    )

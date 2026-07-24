@@ -112,6 +112,7 @@ prints/**
 # ⚙️ CONFIGURAÇÕES LOCAIS
 # ============================================
 config/local.json
+docs/project-status/*
 
 # ============================================
 # 🧪 TEMPORÁRIOS / BACKUPS

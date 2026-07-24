@@ -261,6 +261,430 @@ class DataTypeReport:
         return tuple(str(column) for column in selected)
 
 
+@dataclass(frozen=True, slots=True)
+class DataDictionaryReport:
+    """Describe semantic documentation coverage for dataset columns."""
+
+    checks: pd.DataFrame
+
+    @property
+    def undocumented_columns(self) -> tuple[str, ...]:
+        """Return dataset columns without dictionary documentation."""
+        return self._columns_with_status("Not documented")
+
+    @property
+    def missing_documented_columns(self) -> tuple[str, ...]:
+        """Return documented columns that are absent from the dataset."""
+        return self._columns_with_status("Missing column")
+
+    @property
+    def has_undocumented_columns(self) -> bool:
+        """Return whether at least one dataset column is undocumented."""
+        return bool(self.undocumented_columns)
+
+    @property
+    def has_missing_documented_columns(self) -> bool:
+        """Return whether documented columns are absent from the dataset."""
+        return bool(self.missing_documented_columns)
+
+    @property
+    def is_complete(self) -> bool:
+        """Return whether dictionary and dataset columns align exactly."""
+        return not (
+            self.has_undocumented_columns
+            or self.has_missing_documented_columns
+        )
+
+    def column_frame(self) -> pd.DataFrame:
+        """Return a copy of the per-column semantic documentation table."""
+        return self.checks.copy(deep=True)
+
+    def issues_frame(self) -> pd.DataFrame:
+        """Return only documentation coverage issues."""
+        return self.checks.loc[
+            self.checks["Status"] != "Documented"
+        ].reset_index(drop=True).copy(deep=True)
+
+    def summary_frame(self) -> pd.DataFrame:
+        """Return deterministic counts grouped by documentation status."""
+        status_order = [
+            "Documented",
+            "Not documented",
+            "Missing column",
+        ]
+        counts = self.checks["Status"].value_counts()
+
+        return pd.DataFrame(
+            {
+                "Status": status_order,
+                "Column count": [
+                    int(counts.get(status, 0))
+                    for status in status_order
+                ],
+            }
+        )
+
+    def raise_if_invalid(
+        self,
+        *,
+        require_all_columns_documented: bool = True,
+        require_documented_columns_present: bool = True,
+    ) -> None:
+        """Raise one consolidated error for documentation coverage issues."""
+        failures: list[str] = []
+
+        if (
+            require_all_columns_documented
+            and self.has_undocumented_columns
+        ):
+            failures.append(
+                "dataset columns without data dictionary entries: "
+                + ", ".join(self.undocumented_columns)
+            )
+
+        if (
+            require_documented_columns_present
+            and self.has_missing_documented_columns
+        ):
+            failures.append(
+                "data dictionary columns missing from the dataset: "
+                + ", ".join(self.missing_documented_columns)
+            )
+
+        if failures:
+            raise DataValidationError("; ".join(failures) + ".")
+
+    def _columns_with_status(self, status: str) -> tuple[str, ...]:
+        selected = self.checks.loc[
+            self.checks["Status"] == status,
+            "Column",
+        ]
+        return tuple(str(column) for column in selected)
+
+
+def analyze_data_dictionary(
+    dataframe: pd.DataFrame,
+    dictionary: Mapping[str, Mapping[str, object]],
+    *,
+    target: str,
+    identifiers: Collection[str] = (),
+) -> DataDictionaryReport:
+    """Validate and render semantic documentation for dataset columns.
+
+    Each dictionary entry must provide a non-empty ``description`` and
+    ``expected_values`` field. The optional ``unit`` field may be a string or
+    ``None``. Analytical roles are derived from ``target`` and ``identifiers``
+    so they do not need to be repeated in dataset-specific documentation.
+
+    The input DataFrame and dictionary are never modified. Dataset columns
+    retain their original order. Documented columns absent from the DataFrame
+    are appended in dictionary declaration order.
+    """
+    normalized_target = _normalize_declared_column_name(
+        target,
+        label="target",
+    )
+    normalized_identifiers = _normalize_identifier_columns(identifiers)
+
+    if normalized_target in normalized_identifiers:
+        raise ValueError(
+            "The target column cannot also be an identifier."
+        )
+
+    observed_columns = tuple(str(column) for column in dataframe.columns)
+    observed_column_set = set(observed_columns)
+
+    missing_role_columns = [
+        column
+        for column in (normalized_target, *normalized_identifiers)
+        if column not in observed_column_set
+    ]
+    if missing_role_columns:
+        raise KeyError(
+            "Declared analytical role columns were not found in the "
+            "dataset: "
+            + ", ".join(missing_role_columns)
+        )
+
+    normalized_dictionary = _normalize_data_dictionary(dictionary)
+    rows: list[dict[str, object]] = []
+
+    for column in observed_columns:
+        entry = normalized_dictionary.get(column)
+        role = _analytical_role(
+            column,
+            target=normalized_target,
+            identifiers=normalized_identifiers,
+        )
+
+        if entry is None:
+            rows.append(
+                {
+                    "Column": column,
+                    "Description": "",
+                    "Expected values": "",
+                    "Unit": "",
+                    "Analytical role": role,
+                    "Status": "Not documented",
+                }
+            )
+            continue
+
+        rows.append(
+            {
+                "Column": column,
+                "Description": entry["description"],
+                "Expected values": entry["expected_values"],
+                "Unit": entry["unit"],
+                "Analytical role": role,
+                "Status": "Documented",
+            }
+        )
+
+    for column, entry in normalized_dictionary.items():
+        if column in observed_column_set:
+            continue
+
+        rows.append(
+            {
+                "Column": column,
+                "Description": entry["description"],
+                "Expected values": entry["expected_values"],
+                "Unit": entry["unit"],
+                "Analytical role": _analytical_role(
+                    column,
+                    target=normalized_target,
+                    identifiers=normalized_identifiers,
+                ),
+                "Status": "Missing column",
+            }
+        )
+
+    checks = pd.DataFrame(
+        rows,
+        columns=[
+            "Column",
+            "Description",
+            "Expected values",
+            "Unit",
+            "Analytical role",
+            "Status",
+        ],
+    )
+
+    return DataDictionaryReport(checks=checks)
+
+
+def _normalize_data_dictionary(
+    dictionary: Mapping[str, Mapping[str, object]],
+) -> dict[str, dict[str, str]]:
+    if not isinstance(dictionary, Mapping):
+        raise TypeError("dictionary must be a mapping by column name.")
+
+    normalized: dict[str, dict[str, str]] = {}
+    allowed_fields = {"description", "expected_values", "unit"}
+
+    for raw_column, raw_entry in dictionary.items():
+        column = _normalize_declared_column_name(
+            raw_column,
+            label="data dictionary column",
+        )
+
+        if column in normalized:
+            raise ValueError(
+                "Duplicate data dictionary column after normalization: "
+                f"{column}"
+            )
+
+        if not isinstance(raw_entry, Mapping):
+            raise TypeError(
+                f"Data dictionary entry for '{column}' must be a mapping."
+            )
+
+        unexpected_fields = sorted(
+            str(field)
+            for field in raw_entry.keys()
+            if field not in allowed_fields
+        )
+        if unexpected_fields:
+            raise ValueError(
+                f"Unsupported data dictionary field(s) for '{column}': "
+                + ", ".join(unexpected_fields)
+            )
+
+        if "description" not in raw_entry:
+            raise ValueError(
+                f"Data dictionary entry for '{column}' must define "
+                "'description'."
+            )
+        if "expected_values" not in raw_entry:
+            raise ValueError(
+                f"Data dictionary entry for '{column}' must define "
+                "'expected_values'."
+            )
+
+        description = _normalize_non_empty_text(
+            raw_entry["description"],
+            field="description",
+            column=column,
+        )
+        expected_values = _format_expected_values(
+            raw_entry["expected_values"],
+            column=column,
+        )
+        unit = _normalize_optional_text(
+            raw_entry.get("unit"),
+            field="unit",
+            column=column,
+        )
+
+        normalized[column] = {
+            "description": description,
+            "expected_values": expected_values,
+            "unit": unit,
+        }
+
+    return normalized
+
+
+def _normalize_declared_column_name(
+    value: object,
+    *,
+    label: str,
+) -> str:
+    if not isinstance(value, str):
+        raise TypeError(f"{label} must be a string.")
+
+    normalized = value.strip()
+    if not normalized:
+        raise ValueError(f"{label} cannot be empty.")
+
+    return normalized
+
+
+def _normalize_identifier_columns(
+    identifiers: Collection[str],
+) -> tuple[str, ...]:
+    if isinstance(identifiers, str):
+        raw_identifiers = [identifiers]
+    elif isinstance(identifiers, Collection):
+        raw_identifiers = list(identifiers)
+    else:
+        raise TypeError(
+            "identifiers must be a string or a collection of strings."
+        )
+
+    normalized: list[str] = []
+
+    for raw_identifier in raw_identifiers:
+        identifier = _normalize_declared_column_name(
+            raw_identifier,
+            label="identifier column",
+        )
+
+        if identifier in normalized:
+            raise ValueError(
+                f"Duplicate identifier declaration: {identifier}"
+            )
+
+        normalized.append(identifier)
+
+    return tuple(normalized)
+
+
+def _normalize_non_empty_text(
+    value: object,
+    *,
+    field: str,
+    column: str,
+) -> str:
+    if not isinstance(value, str):
+        raise TypeError(
+            f"Data dictionary field '{field}' for '{column}' "
+            "must be a string."
+        )
+
+    normalized = value.strip()
+    if not normalized:
+        raise ValueError(
+            f"Data dictionary field '{field}' for '{column}' "
+            "cannot be empty."
+        )
+
+    return normalized
+
+
+def _normalize_optional_text(
+    value: object,
+    *,
+    field: str,
+    column: str,
+) -> str:
+    if value is None:
+        return ""
+
+    return _normalize_non_empty_text(
+        value,
+        field=field,
+        column=column,
+    )
+
+
+def _format_expected_values(
+    value: object,
+    *,
+    column: str,
+) -> str:
+    if isinstance(value, str):
+        return _normalize_non_empty_text(
+            value,
+            field="expected_values",
+            column=column,
+        )
+
+    if isinstance(value, Collection):
+        items = list(value)
+        if not items:
+            raise ValueError(
+                f"Data dictionary field 'expected_values' for "
+                f"'{column}' cannot be empty."
+            )
+
+        rendered: list[str] = []
+        for item in items:
+            if item is None:
+                rendered.append("null")
+                continue
+
+            text = str(item).strip()
+            if not text:
+                raise ValueError(
+                    f"Data dictionary expected values for '{column}' "
+                    "cannot contain empty items."
+                )
+            rendered.append(text)
+
+        return ", ".join(rendered)
+
+    raise TypeError(
+        f"Data dictionary field 'expected_values' for '{column}' "
+        "must be a string or collection."
+    )
+
+
+def _analytical_role(
+    column: str,
+    *,
+    target: str,
+    identifiers: tuple[str, ...],
+) -> str:
+    if column == target:
+        return "Target"
+    if column in identifiers:
+        return "Identifier"
+    return "Candidate feature"
+
+
 def analyze_observation_unit(
     dataframe: pd.DataFrame,
     identifier: str,
