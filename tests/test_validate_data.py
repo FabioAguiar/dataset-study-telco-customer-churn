@@ -116,7 +116,9 @@ def test_data_type_report_highlights_numeric_column_loaded_as_text() -> None:
 
     issues = report.issues_frame()
     assert list(issues["Column"]) == ["total_charges"]
-    assert issues.iloc[0]["Observed dtype"] == "object"
+    assert issues.iloc[0]["Observed dtype"] == str(
+        dataframe["total_charges"].dtype
+    )
     assert issues.iloc[0]["Observed type"] == "string"
     assert issues.iloc[0]["Expected type"] == "numeric"
     assert issues.iloc[0]["Status"] == "Mismatch"
