@@ -12,6 +12,7 @@ license = { file = "LICENSE" }
 dependencies = [
     "kagglehub>=0.3",
     "pandas>=2.0",
+    "scikit-learn>=1.2",
 ]
 
 [project.optional-dependencies]
