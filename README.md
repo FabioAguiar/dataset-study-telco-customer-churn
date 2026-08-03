@@ -21,10 +21,6 @@ Keep exhaustive EDA and diagnostic figures in notebooks or documentation folders
 
 End-to-end, reproducible study of the **Telco Customer Churn** dataset, covering data acquisition, structural validation, exploratory analysis, deterministic preparation, model selection, final holdout evaluation, model bundling, and a safe educational inference demonstration.
 
-[View the repository on GitHub](https://github.com/FabioAguiar/dataset-study-telco-customer-churn)
-
-> [!IMPORTANT]
-> This repository is an **educational benchmark**, not an operational churn-decision system. Operational validity, temporal validity, feature availability at scoring time, intervention costs, and the production threshold remain unconfirmed.
 
 ## At a glance
 
