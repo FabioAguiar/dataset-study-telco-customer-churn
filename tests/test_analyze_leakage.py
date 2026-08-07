@@ -10,6 +10,7 @@ import pytest
 from scripts.analyze_leakage import (
     DataLeakageAnalysisError,
     analyze_data_leakage,
+    build_leakage_evidence,
 )
 
 
@@ -578,3 +579,138 @@ def test_results_are_deterministic() -> None:
         first.risk_register_frame(),
         second.risk_register_frame(),
     )
+
+
+# Materialization: build_leakage_evidence
+
+
+def test_build_leakage_evidence_requires_revision_or_reason() -> None:
+    report = _analyze()
+
+    with pytest.raises(ValueError, match="unavailable_reason"):
+        build_leakage_evidence(report, dataset_slug="telco-customer-churn")
+
+
+def test_build_leakage_evidence_carries_dataset_identity_and_target() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+    )
+
+    assert evidence["dataset_slug"] == "telco-customer-churn"
+    assert evidence["dataset_identity"]["row_count"] == report.row_count
+    assert evidence["target"] == "Churn"
+    assert evidence["schema_version"] == "leakage-evidence.v1"
+
+
+def test_build_leakage_evidence_preserves_unresolved_temporal_context_verbatim() -> None:
+    report = _analyze(context=_context(complete=False))
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+    )
+
+    unresolved_fields = {
+        row["Context field"]
+        for row in evidence["temporal_or_post_outcome_leakage_checks"][
+            "inference_time_context"
+        ]
+        if not row["Resolved"]
+    }
+    assert "scoring_population" in unresolved_fields
+    limitation_texts = " ".join(
+        item["limitation"] for item in evidence["limitations"]
+    )
+    assert "scoring_population" in limitation_texts
+    for item in evidence["limitations"]:
+        assert item["status"] == "Unresolved"
+
+    conclusion = evidence["blocking_or_non_blocking_conclusion"]
+    assert conclusion["modeling_ready"] is False
+    assert conclusion["conclusion"] == "blocking"
+    assert "temporal contract" in " ".join(conclusion["conclusion_reasons"])
+
+
+def test_build_leakage_evidence_reports_non_blocking_when_modeling_ready() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+    )
+
+    assert report.is_modeling_ready
+    conclusion = evidence["blocking_or_non_blocking_conclusion"]
+    assert conclusion["modeling_ready"] is True
+    assert conclusion["conclusion"] == "non_blocking"
+    assert evidence["limitations"] == []
+
+
+def test_build_leakage_evidence_identifier_exclusions_include_customer_id() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+    )
+
+    identifier_fields = {row["field"] for row in evidence["identifier_exclusions"]}
+    assert identifier_fields == {"customerID"}
+
+
+def test_build_leakage_evidence_declares_duplicate_scope_as_not_applicable() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+    )
+
+    assert len(evidence["duplicate_or_near_duplicate_concerns"]) == 1
+    assert (
+        evidence["duplicate_or_near_duplicate_concerns"][0]["status"]
+        == "not_applicable_to_this_module"
+    )
+
+
+def test_build_leakage_evidence_preserves_a_real_producer_revision() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision="v3",
+    )
+
+    assert evidence["producer_revision"] == "v3"
+    assert evidence["producer_revision_unavailable_reason"] is None
+
+
+def test_build_leakage_evidence_carries_input_artifact_references() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+        input_artifact_references={
+            "prepared_csv_sha256": "a" * 64,
+        },
+    )
+
+    assert evidence["input_artifact_hashes_or_references"] == {
+        "prepared_csv_sha256": "a" * 64,
+    }
+
+
+def test_build_leakage_evidence_does_not_fabricate_findings_beyond_report() -> None:
+    report = _analyze()
+    evidence = build_leakage_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this synthetic fixture.",
+    )
+
+    assert len(evidence["findings"]) == len(report.risk_register_frame())
+    assert len(evidence["feature_leakage_checks"]) == len(report.field_audit_frame())

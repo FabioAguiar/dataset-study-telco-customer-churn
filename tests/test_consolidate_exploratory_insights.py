@@ -9,6 +9,7 @@ import pytest
 
 from scripts.consolidate_exploratory_insights import (
     ExploratoryInsightsConsolidationError,
+    build_exploratory_analysis_evidence,
     consolidate_key_exploratory_insights,
 )
 
@@ -624,3 +625,114 @@ def test_empty_consolidation_is_valid_and_modeling_ready() -> None:
     assert report.is_ready_for_preparation_decisions
     assert report.is_ready_for_modeling
     assert report.insights_frame().empty
+
+
+# Materialization: build_exploratory_analysis_evidence
+
+
+def test_build_exploratory_analysis_evidence_requires_revision_or_reason() -> None:
+    report = _report()
+
+    with pytest.raises(ValueError, match="unavailable_reason"):
+        build_exploratory_analysis_evidence(
+            report, dataset_slug="telco-customer-churn"
+        )
+
+
+def test_build_exploratory_analysis_evidence_carries_all_insights() -> None:
+    report = _report()
+    evidence = build_exploratory_analysis_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    assert evidence["dataset_slug"] == "telco-customer-churn"
+    assert evidence["schema_version"] == "exploratory-analysis-evidence.v1"
+    assert {row["insight_id"] for row in evidence["insights"]} == {
+        "INS-001",
+        "INS-002",
+        "INS-003",
+    }
+    ins_001 = next(
+        row for row in evidence["insights"] if row["insight_id"] == "INS-001"
+    )
+    assert ins_001["affected_fields"] == ["tenure", "Churn"]
+    assert ins_001["theme"] == "Customer lifecycle"
+    assert ins_001["evidence_count"] == 1
+
+
+def test_build_exploratory_analysis_evidence_attaches_visual_id_cross_references() -> None:
+    report = _report()
+    evidence = build_exploratory_analysis_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+        visual_ids_by_insight={
+            "INS-001": ("tenure_by_churn_boxplot",),
+            "INS-002": ("contract_churn_rate_by_category",),
+        },
+    )
+
+    ins_001 = next(
+        row for row in evidence["insights"] if row["insight_id"] == "INS-001"
+    )
+    ins_003 = next(
+        row for row in evidence["insights"] if row["insight_id"] == "INS-003"
+    )
+    assert ins_001["visual_ids"] == ["tenure_by_churn_boxplot"]
+    assert ins_003["visual_ids"] == []
+
+
+def test_build_exploratory_analysis_evidence_does_not_require_notebook_runtime() -> None:
+    report = _report()
+    evidence = build_exploratory_analysis_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    import json
+
+    json.dumps(evidence)
+
+
+def test_build_exploratory_analysis_evidence_carries_hypotheses_and_limitations() -> None:
+    report = _report()
+    evidence = build_exploratory_analysis_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    assert len(evidence["hypotheses"]) == len(report.hypotheses_frame())
+    assert len(evidence["limitations"]) == len(report.limitations_frame())
+    assert evidence["readiness"]["is_ready_for_modeling"] == (
+        report.is_ready_for_modeling
+    )
+
+
+def test_build_exploratory_analysis_evidence_preserves_a_real_producer_revision() -> None:
+    report = _report()
+    evidence = build_exploratory_analysis_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision="v3",
+    )
+
+    assert evidence["producer_revision"] == "v3"
+    assert evidence["producer_revision_unavailable_reason"] is None
+
+
+def test_build_exploratory_analysis_evidence_carries_input_artifact_references() -> None:
+    report = _report()
+    evidence = build_exploratory_analysis_evidence(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+        input_artifact_references={"prepared_csv_sha256": "a" * 64},
+    )
+
+    assert evidence["input_artifact_hashes_or_references"] == {
+        "prepared_csv_sha256": "a" * 64,
+    }

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Final
+from typing import Any, Final
 
 import pandas as pd
 
@@ -1357,6 +1358,112 @@ def _tuple_values(value: object) -> tuple[str, ...]:
         if text and text not in result:
             result.append(text)
     return tuple(result)
+
+
+def _json_safe(value: Any) -> Any:
+    """Recursively replace non-JSON-compliant float NaN with ``None``.
+
+    Some pandas dataframe columns render a missing entry as float ``nan``
+    rather than ``None`` once serialized through ``to_dict("records")``.
+    This normalizes those values for a strict JSON artifact without
+    altering any analysis result.
+    """
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    return value
+
+
+EXPLORATORY_ANALYSIS_EVIDENCE_CONTRACT_VERSION: Final[str] = (
+    "exploratory-analysis-evidence.v1"
+)
+
+
+def build_exploratory_analysis_evidence(
+    report: KeyExploratoryInsightsReport,
+    *,
+    dataset_slug: str,
+    visual_ids_by_insight: Mapping[str, Sequence[str]] | None = None,
+    producer_revision: str | None = None,
+    producer_revision_unavailable_reason: str | None = None,
+    input_artifact_references: Mapping[str, Any] | None = None,
+    contract_version: str = EXPLORATORY_ANALYSIS_EVIDENCE_CONTRACT_VERSION,
+) -> dict[str, Any]:
+    """Materialize an already-computed ``KeyExploratoryInsightsReport``.
+
+    This performs no new exploratory analysis: it transcribes the insight,
+    evidence, hypothesis, validation-action, and limitation records already
+    produced by :func:`consolidate_key_exploratory_insights`. Each insight
+    may carry an explicit ``visual_ids`` cross-reference into
+    ``docs/images/visual-evidence-index.json`` when the caller supplies one;
+    the artifact itself never depends on notebook runtime state.
+    """
+    if producer_revision is None and not producer_revision_unavailable_reason:
+        raise ValueError(
+            "producer_revision_unavailable_reason is required when "
+            "producer_revision is not supplied."
+        )
+
+    visual_map = dict(visual_ids_by_insight or {})
+    insight_rows: list[dict[str, Any]] = []
+    for row in report.insights_frame().to_dict("records"):
+        insight_id = str(row["Insight ID"])
+        insight_rows.append(
+            {
+                "insight_id": insight_id,
+                "theme": row["Theme"],
+                "title": row["Title"],
+                "insight_type": row["Insight type"],
+                "affected_fields": list(row["Affected fields"]),
+                "relevance": row["Relevance"],
+                "status": row["Status"],
+                "source_stages": list(row["Source stages"]),
+                "summary": row["Summary"],
+                "modeling_implication": row["Modeling implication"],
+                "interpretation_boundary": row["Interpretation boundary"],
+                "evidence_count": int(row["Evidence count"]),
+                "hypothesis_count": int(row["Hypothesis count"]),
+                "visual_ids": list(visual_map.get(insight_id, ())),
+            }
+        )
+
+    return _json_safe({
+        "schema_version": EXPLORATORY_ANALYSIS_EVIDENCE_CONTRACT_VERSION,
+        "artifact_type": "exploratory_analysis_evidence",
+        "contract_version": contract_version,
+        "dataset_slug": dataset_slug,
+        "available_fields": list(report.available_fields),
+        "insights": insight_rows,
+        "evidence": report.evidence_frame().to_dict("records"),
+        "hypotheses": report.hypotheses_frame().to_dict("records"),
+        "validation_actions": report.validation_actions_frame().to_dict("records"),
+        "limitations": report.limitations_frame().to_dict("records"),
+        "readiness": {
+            "is_structurally_valid": report.is_structurally_valid,
+            "is_ready_for_preparation_decisions": (
+                report.is_ready_for_preparation_decisions
+            ),
+            "is_ready_for_modeling": report.is_ready_for_modeling,
+            "has_high_relevance_insights": report.has_high_relevance_insights,
+            "has_unvalidated_hypotheses": report.has_unvalidated_hypotheses,
+            "has_unresolved_governance_limits": (
+                report.has_unresolved_governance_limits
+            ),
+            "has_unresolved_temporal_limits": report.has_unresolved_temporal_limits,
+        },
+        "producer_revision": producer_revision,
+        "producer_revision_unavailable_reason": (
+            None
+            if producer_revision is not None
+            else producer_revision_unavailable_reason
+        ),
+        "input_artifact_hashes_or_references": (
+            dict(input_artifact_references) if input_artifact_references else {}
+        ),
+    })
 
 
 def _unique_text_tuple(values: Sequence[object]) -> tuple[str, ...]:

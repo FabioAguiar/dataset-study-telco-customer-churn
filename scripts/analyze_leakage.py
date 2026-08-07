@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Final
+from typing import Any, Final
 
 import pandas as pd
 
@@ -1153,6 +1154,166 @@ def _duplicates(values: tuple[str, ...]) -> tuple[str, ...]:
 
 def _unique(values: Sequence[str]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(values))
+
+
+def _json_safe(value: Any) -> Any:
+    """Recursively replace non-JSON-compliant float NaN with ``None``.
+
+    Some pandas dataframe columns (for example ``context_frame()``'s
+    ``"Value"`` column under pandas' string dtype) render a missing entry as
+    float ``nan`` rather than ``None`` once serialized through
+    ``to_dict("records")``. This normalizes those values for a strict JSON
+    artifact without altering any analysis result.
+    """
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    return value
+
+
+LEAKAGE_EVIDENCE_CONTRACT_VERSION: Final[str] = "leakage-evidence.v1"
+
+
+def build_leakage_evidence(
+    report: DataLeakageReport,
+    *,
+    dataset_slug: str,
+    producer_revision: str | None = None,
+    producer_revision_unavailable_reason: str | None = None,
+    input_artifact_references: Mapping[str, Any] | None = None,
+    contract_version: str = LEAKAGE_EVIDENCE_CONTRACT_VERSION,
+) -> dict[str, Any]:
+    """Materialize an already-computed ``DataLeakageReport`` as structured JSON.
+
+    This function performs no new leakage analysis: it transcribes the report
+    already produced by :func:`analyze_data_leakage`. Fields the notebook
+    leaves explicitly "Unresolved" (the inference-time temporal contract) are
+    carried through verbatim as open, non-silent limitations rather than
+    being resolved to "safe".
+    """
+    if producer_revision is None and not producer_revision_unavailable_reason:
+        raise ValueError(
+            "producer_revision_unavailable_reason is required when "
+            "producer_revision is not supplied."
+        )
+
+    context_rows = report.context_frame().to_dict("records")
+    unresolved_context = [row for row in context_rows if not bool(row["Resolved"])]
+    risk_register = report.risk_register_frame()
+    severity_counts = (
+        {str(key): int(value) for key, value in risk_register["Severity"].value_counts().items()}
+        if not risk_register.empty
+        else {}
+    )
+
+    modeling_ready = report.is_modeling_ready
+    conclusion_reasons: list[str] = []
+    if report.has_direct_target_leakage:
+        conclusion_reasons.append("direct target leakage detected")
+    if report.has_target_proxy_candidates:
+        conclusion_reasons.append("target proxy candidate(s) detected")
+    if report.has_unresolved_temporal_contract:
+        conclusion_reasons.append(
+            "inference-time temporal contract remains unresolved"
+        )
+    if report.has_inference_availability_issues:
+        conclusion_reasons.append(
+            "candidate feature inference-time availability is unresolved"
+        )
+    if report.has_global_fit_risks:
+        conclusion_reasons.append(
+            "one or more transformations are not isolated to training data"
+        )
+    if not conclusion_reasons:
+        conclusion_reasons.append(
+            "no open leakage-safety gate was detected by the reused audit"
+        )
+
+    return _json_safe({
+        "schema_version": LEAKAGE_EVIDENCE_CONTRACT_VERSION,
+        "artifact_type": "leakage_evidence",
+        "contract_version": contract_version,
+        "dataset_slug": dataset_slug,
+        "dataset_identity": {
+            "dataset_slug": dataset_slug,
+            "row_count": report.row_count,
+        },
+        "target": report.target,
+        "identifier_exclusions": [
+            {
+                "field": str(row["Field"]),
+                "model_disposition": str(row["Model disposition"]),
+                "reason": str(row["Reason"]),
+            }
+            for row in report.field_audit_frame().to_dict("records")
+            if bool(row["Identifier risk"])
+        ],
+        "feature_leakage_checks": report.field_audit_frame().to_dict("records"),
+        "temporal_or_post_outcome_leakage_checks": {
+            "inference_time_context": context_rows,
+            "transformation_temporal_risks": [
+                row
+                for row in report.transformation_audit_frame().to_dict("records")
+                if bool(row["Temporal risk"])
+            ],
+        },
+        "duplicate_or_near_duplicate_concerns": [
+            {
+                "status": "not_applicable_to_this_module",
+                "reason": (
+                    "analyze_data_leakage() does not perform record-level "
+                    "duplicate or near-duplicate detection; that concern is "
+                    "owned separately by scripts/validate_duplicates.py and "
+                    "the raw-schema identifier-uniqueness validation in "
+                    "scripts/prepare_data.py."
+                ),
+            }
+        ],
+        "split_leakage_checks": report.pipeline_policy_frame().to_dict("records"),
+        "method": (
+            "Materialization of the existing, unmodified "
+            "scripts.analyze_leakage.analyze_data_leakage(...) report: "
+            "direct-target check, identifier-risk audit, transformation "
+            "audit, exact/normalized/deterministic target-proxy detection, "
+            "and train/test isolation pipeline-policy audit. No new "
+            "leakage-analysis logic was introduced by this materialization."
+        ),
+        "findings": risk_register.to_dict("records"),
+        "severity": {
+            "risk_register_severity_counts": severity_counts,
+            "has_direct_target_leakage": report.has_direct_target_leakage,
+            "has_identifier_risks": report.has_identifier_risks,
+            "has_target_proxy_candidates": report.has_target_proxy_candidates,
+            "has_temporal_risks": report.has_temporal_risks,
+            "has_global_fit_risks": report.has_global_fit_risks,
+        },
+        "blocking_or_non_blocking_conclusion": {
+            "structurally_valid": report.is_structurally_valid,
+            "modeling_ready": modeling_ready,
+            "conclusion": "non_blocking" if modeling_ready else "blocking",
+            "conclusion_reasons": conclusion_reasons,
+        },
+        "limitations": [
+            {
+                "limitation": f"{row['Context field']} is unresolved.",
+                "status": "Unresolved",
+                "interpretation": str(row["Interpretation"]),
+            }
+            for row in unresolved_context
+        ],
+        "producer_revision": producer_revision,
+        "producer_revision_unavailable_reason": (
+            None
+            if producer_revision is not None
+            else producer_revision_unavailable_reason
+        ),
+        "input_artifact_hashes_or_references": (
+            dict(input_artifact_references) if input_artifact_references else {}
+        ),
+    })
 
 
 def _issue(

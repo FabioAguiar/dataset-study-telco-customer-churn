@@ -9,6 +9,7 @@ import pytest
 
 from scripts.consolidate_quality_findings import (
     InitialDataQualityConsolidationError,
+    build_data_quality_findings,
     consolidate_initial_data_quality_findings,
 )
 
@@ -548,3 +549,98 @@ def test_no_findings_is_structurally_valid_and_modeling_ready() -> None:
     assert report.is_safe_preparation_scope_defined
     assert report.is_modeling_ready
     assert report.blockers_frame().empty
+
+
+# Materialization: build_data_quality_findings
+
+
+def test_build_data_quality_findings_requires_revision_or_reason() -> None:
+    report = _report()
+
+    with pytest.raises(ValueError, match="unavailable_reason"):
+        build_data_quality_findings(report, dataset_slug="telco-customer-churn")
+
+
+def test_build_data_quality_findings_carries_dataset_identity() -> None:
+    report = _report()
+    findings = build_data_quality_findings(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    assert findings["dataset_slug"] == "telco-customer-churn"
+    assert findings["dataset_identity"]["row_count"] == 7043
+    assert findings["schema_version"] == "data-quality-findings.v1"
+
+
+def test_build_data_quality_findings_declares_relationship_to_quality_evidence() -> None:
+    report = _report()
+    findings = build_data_quality_findings(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    relationship = findings["relationship_to_quality_evidence"]
+    assert relationship["quality_evidence_artifact"].endswith(
+        "quality-evidence.json"
+    )
+    assert relationship["duplicates_quality_evidence_payload"] is False
+
+
+def test_build_data_quality_findings_carries_all_findings_and_actions() -> None:
+    report = _report()
+    findings = build_data_quality_findings(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    assert len(findings["findings"]) == len(report.findings_frame())
+    assert len(findings["preparation_actions"]) == len(
+        report.preparation_actions_frame()
+    )
+    assert len(findings["validated_non_issues"]) == len(
+        report.validated_non_issues_frame()
+    )
+    assert findings["readiness"]["is_modeling_ready"] == report.is_modeling_ready
+
+
+def test_build_data_quality_findings_preserves_a_real_producer_revision() -> None:
+    report = _report()
+    findings = build_data_quality_findings(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision="v3",
+    )
+
+    assert findings["producer_revision"] == "v3"
+    assert findings["producer_revision_unavailable_reason"] is None
+
+
+def test_build_data_quality_findings_carries_input_artifact_references() -> None:
+    report = _report()
+    findings = build_data_quality_findings(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+        input_artifact_references={"prepared_csv_sha256": "a" * 64},
+    )
+
+    assert findings["input_artifact_hashes_or_references"] == {
+        "prepared_csv_sha256": "a" * 64,
+    }
+
+
+def test_build_data_quality_findings_is_json_serializable() -> None:
+    import json
+
+    report = _report()
+    findings = build_data_quality_findings(
+        report,
+        dataset_slug="telco-customer-churn",
+        producer_revision_unavailable_reason="Not tracked for this fixture.",
+    )
+
+    json.dumps(findings)

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Final
+from typing import Any, Final
 
 import pandas as pd
 
@@ -1150,6 +1151,109 @@ def _text(value: object) -> str:
     if value is None:
         return ""
     return str(value).strip()
+
+
+def _json_safe(value: Any) -> Any:
+    """Recursively replace non-JSON-compliant float NaN with ``None``.
+
+    Some pandas dataframe columns render a missing entry as float ``nan``
+    rather than ``None`` once serialized through ``to_dict("records")``.
+    This normalizes those values for a strict JSON artifact without
+    altering any analysis result.
+    """
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    return value
+
+
+DATA_QUALITY_FINDINGS_CONTRACT_VERSION: Final[str] = "data-quality-findings.v1"
+
+
+def build_data_quality_findings(
+    report: InitialDataQualityReport,
+    *,
+    dataset_slug: str,
+    producer_revision: str | None = None,
+    producer_revision_unavailable_reason: str | None = None,
+    input_artifact_references: Mapping[str, Any] | None = None,
+    contract_version: str = DATA_QUALITY_FINDINGS_CONTRACT_VERSION,
+) -> dict[str, Any]:
+    """Materialize an already-computed ``InitialDataQualityReport`` as JSON.
+
+    This performs no new quality analysis: it transcribes the qualitative
+    findings, evidence, preparation actions, and validated non-issues
+    already produced by :func:`consolidate_initial_data_quality_findings`.
+    This artifact complements but never replaces
+    ``artifacts/preparation/telco-customer-churn/quality-evidence.json``:
+    that sibling artifact owns mechanical schema/fingerprint validation,
+    while this artifact owns the qualitative findings/disposition narrative
+    layered above it.
+    """
+    if producer_revision is None and not producer_revision_unavailable_reason:
+        raise ValueError(
+            "producer_revision_unavailable_reason is required when "
+            "producer_revision is not supplied."
+        )
+
+    return _json_safe({
+        "schema_version": DATA_QUALITY_FINDINGS_CONTRACT_VERSION,
+        "artifact_type": "data_quality_findings",
+        "contract_version": contract_version,
+        "dataset_slug": dataset_slug,
+        "dataset_identity": {
+            "dataset_slug": dataset_slug,
+            "row_count": report.row_count,
+        },
+        "relationship_to_quality_evidence": {
+            "quality_evidence_artifact": (
+                "artifacts/preparation/telco-customer-churn/"
+                "quality-evidence.json"
+            ),
+            "quality_evidence_owns": (
+                "mechanical/schema/fingerprint validation "
+                "(raw and prepared schema checks, partition validation, "
+                "materialization counts, SHA-256 fingerprint chain)."
+            ),
+            "this_artifact_owns": (
+                "qualitative findings and disposition narrative already "
+                "produced by notebook 01 Section 16 "
+                "(consolidate_initial_data_quality_findings), layered above "
+                "the mechanical checks."
+            ),
+            "duplicates_quality_evidence_payload": False,
+        },
+        "available_fields": list(report.available_fields),
+        "findings": report.findings_frame().to_dict("records"),
+        "evidence": report.evidence_frame().to_dict("records"),
+        "preparation_actions": report.preparation_actions_frame().to_dict("records"),
+        "validated_non_issues": report.validated_non_issues_frame().to_dict("records"),
+        "blockers": report.blockers_frame().to_dict("records"),
+        "readiness": {
+            "is_structurally_valid": report.is_structurally_valid,
+            "is_safe_preparation_scope_defined": (
+                report.is_safe_preparation_scope_defined
+            ),
+            "is_modeling_ready": report.is_modeling_ready,
+            "has_open_findings": report.has_open_findings,
+            "has_must_fix_actions": report.has_must_fix_actions,
+            "has_external_blockers": report.has_external_blockers,
+            "has_modeling_blockers": report.has_modeling_blockers,
+            "has_validated_non_issues": report.has_validated_non_issues,
+        },
+        "producer_revision": producer_revision,
+        "producer_revision_unavailable_reason": (
+            None
+            if producer_revision is not None
+            else producer_revision_unavailable_reason
+        ),
+        "input_artifact_hashes_or_references": (
+            dict(input_artifact_references) if input_artifact_references else {}
+        ),
+    })
 
 
 def _tuple_values(value: object) -> tuple[str, ...]:

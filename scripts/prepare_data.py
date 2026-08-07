@@ -20,7 +20,7 @@ import tempfile
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Final, Iterable, Mapping, Sequence
 
 import pandas as pd
 from pandas.api import types as pandas_types
@@ -1188,6 +1188,57 @@ def runtime_versions() -> dict[str, str]:
     }
 
 
+_SOURCE_IDENTITY_CONTRACT_VERSION: Final[str] = "source-identity.v1"
+
+
+def build_source_identity(
+    *,
+    dataset_slug: str,
+    source_path: str | Path,
+    source_sha256: str,
+    prepared_sha256: str,
+    raw_report: DatasetValidationReport,
+    source_producer_revision: str | None = None,
+    source_producer_revision_unavailable_reason: str | None = None,
+    contract_version: str = _SOURCE_IDENTITY_CONTRACT_VERSION,
+) -> dict[str, Any]:
+    """Build a portable, path-free source-identity object.
+
+    The identity is correlatable via logical dataset id, content hash, and
+    row/column identity alone, without any repository-relative or absolute
+    path. ``source_producer_revision`` is populated only when a real,
+    provable revision is available; otherwise it stays ``None`` and the
+    reason field explains why no revision claim is made.
+    """
+    if source_producer_revision is None and not source_producer_revision_unavailable_reason:
+        raise ValueError(
+            "source_producer_revision_unavailable_reason is required when "
+            "source_producer_revision is not supplied."
+        )
+    return {
+        "contract_version": contract_version,
+        "dataset_logical_identity": dataset_slug,
+        "source_filename_or_logical_source": Path(source_path).name,
+        "row_column_identity": {
+            "row_count": raw_report.row_count,
+            "column_count": raw_report.column_count,
+            "column_order": list(raw_report.column_order),
+        },
+        "content_hash": {
+            "source_sha256": source_sha256,
+            "prepared_sha256": prepared_sha256,
+        },
+        "source_revision_or_producer_revision": source_producer_revision,
+        "source_revision_unavailable_reason": (
+            None
+            if source_producer_revision is not None
+            else source_producer_revision_unavailable_reason
+        ),
+        "artifact_type_version": CONTRACT_VERSION,
+        "artifact_sha256": source_sha256,
+    }
+
+
 def build_preparation_manifest(
     *,
     dataset_slug: str,
@@ -1204,9 +1255,10 @@ def build_preparation_manifest(
     deterministic_rules: Sequence[Mapping[str, Any]],
     readiness: Mapping[str, Any],
     contract_version: str = CONTRACT_VERSION,
+    source_identity: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a versioned preparation manifest."""
-    return {
+    manifest = {
         "schema_version": "preparation-manifest.v1",
         "artifact_type": "preparation_manifest",
         "dataset_slug": dataset_slug,
@@ -1239,6 +1291,9 @@ def build_preparation_manifest(
         "runtime_versions": runtime_versions(),
         "readiness": _copy_mapping(readiness),
     }
+    if source_identity is not None:
+        manifest["source_identity"] = _copy_mapping(source_identity)
+    return manifest
 
 
 def build_feature_manifest(

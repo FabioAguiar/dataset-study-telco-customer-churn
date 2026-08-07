@@ -1,0 +1,1304 @@
+{
+  "schema_version": "visual-evidence-index.v1",
+  "artifact_type": "visual_evidence_index",
+  "contract_version": "visual-evidence-index.v1",
+  "dataset_slug": "telco-customer-churn",
+  "source_directory": "docs/images",
+  "total_assets_scanned": 76,
+  "total_assets_indexed": 76,
+  "excluded_assets": [],
+  "visuals": [
+    {
+      "visual_id": "churn_target_class_distribution",
+      "logical_role": "target_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Churn Target Class Distribution",
+      "caption": "Churn Target Class Distribution (target distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-10-Target-Distribution",
+      "method": "matplotlib bar chart of the target class counts, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/churn_target_class_distribution.png",
+      "sha256": "af7564fe907298dd50c49529fe1d5a91ce9013b432c9eee230f1e8f5ac71ed18",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "contract_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Contract Category Distribution",
+      "caption": "Contract Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/contract_category_distribution.png",
+      "sha256": "71ad6ffd34c3fdfef4a6c6057a2b858f1eddfe2299e21288f0709fa850ebeed1",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "contract_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Contract Churn Rate By Category",
+      "caption": "Contract Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/contract_churn_rate_by_category.png",
+      "sha256": "762f3d070a1cb55c3d5b397d58ef6c6735b31cfa4d82c83d113f873467212ae7",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "contract_vs_tenure_boxplot",
+      "logical_role": "categorical_vs_numerical_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Contract Vs Tenure Boxplot",
+      "caption": "Contract Vs Tenure Boxplot (categorical vs numerical boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib boxplot of a numerical feature grouped by a categorical feature, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/contract_vs_tenure_boxplot.png",
+      "sha256": "5c2ddfd46187a9da6a59470ff23d6253c548e196269d21f8da35d71f1d292103",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "contract_vs_total_charges_boxplot",
+      "logical_role": "categorical_vs_numerical_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Contract Vs Total Charges Boxplot",
+      "caption": "Contract Vs Total Charges Boxplot (categorical vs numerical boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib boxplot of a numerical feature grouped by a categorical feature, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/contract_vs_total_charges_boxplot.png",
+      "sha256": "676687bf09b20d876636363009380da680268c598a4a7216dc5dacf3db3ed3ba",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "dependents_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Dependents Category Distribution",
+      "caption": "Dependents Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/dependents_category_distribution.png",
+      "sha256": "7d4c3ede215cd6cecd081d861f77fc74fa1f7c9857bb0c2a6da86ab5e440ef5f",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "dependents_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Dependents Churn Rate By Category",
+      "caption": "Dependents Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/dependents_churn_rate_by_category.png",
+      "sha256": "63918c92d3ef5a5c7a87b8b7eeaa68012ef6e950b6b1ef80d66566449e8dafa5",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "device_protection_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Device Protection Category Distribution",
+      "caption": "Device Protection Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/device_protection_category_distribution.png",
+      "sha256": "2e241f3266f937356ec3add5d071bef865bc906b2e4738c9569f212239fac183",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "device_protection_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Device Protection Churn Rate By Category",
+      "caption": "Device Protection Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/device_protection_churn_rate_by_category.png",
+      "sha256": "67940d28c0fb8fdb3ab7b2da217ba7a01dbaf8443cd9ed8bfeb94aeaefab9d46",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "feature_relationships_categorical_cramers_v_heatmap",
+      "logical_role": "feature_relationship_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Feature Relationships Categorical Cramers V Heatmap",
+      "caption": "Feature Relationships Categorical Cramers V Heatmap (feature relationship heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise association matrix (Cramer's V, eta-squared, or Pearson correlation), generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/feature_relationships_categorical_cramers_v_heatmap.png",
+      "sha256": "b45c28668afe48a85f357e8d7240c51519912fb67b5df58c438712aa8ed9e715",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "feature_relationships_categorical_numerical_eta_squared_heatmap",
+      "logical_role": "feature_relationship_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Feature Relationships Categorical Numerical Eta Squared Heatmap",
+      "caption": "Feature Relationships Categorical Numerical Eta Squared Heatmap (feature relationship heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise association matrix (Cramer's V, eta-squared, or Pearson correlation), generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/feature_relationships_categorical_numerical_eta_squared_heatmap.png",
+      "sha256": "6dffc86ddb3610a605730d9eebf604acaafe883ded70ad3660f159984ae73d77",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "feature_relationships_numerical_correlation_heatmap",
+      "logical_role": "feature_relationship_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Feature Relationships Numerical Correlation Heatmap",
+      "caption": "Feature Relationships Numerical Correlation Heatmap (feature relationship heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise association matrix (Cramer's V, eta-squared, or Pearson correlation), generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/feature_relationships_numerical_correlation_heatmap.png",
+      "sha256": "889a392c41a178ed82aaa653babcf4f287f1a53354137e0841b39b6db7587d88",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "feature_to_target_categorical_association_ranking",
+      "logical_role": "feature_to_target_ranking",
+      "chart_kind": "bar_chart",
+      "title": "Feature To Target Categorical Association Ranking",
+      "caption": "Feature To Target Categorical Association Ranking (feature to target ranking).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib ranked bar chart of feature-to-target association or effect-size metrics, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/feature_to_target_categorical_association_ranking.png",
+      "sha256": "00124cf4888156879dd69e3eed0f1199c4a11154de3d149ed66475e87aaf3752",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "feature_to_target_numerical_effect_size_ranking",
+      "logical_role": "feature_to_target_ranking",
+      "chart_kind": "bar_chart",
+      "title": "Feature To Target Numerical Effect Size Ranking",
+      "caption": "Feature To Target Numerical Effect Size Ranking (feature to target ranking).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib ranked bar chart of feature-to-target association or effect-size metrics, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/feature_to_target_numerical_effect_size_ranking.png",
+      "sha256": "51639c0f454b5e655262cdafaca28c9602615db9ef5422b35825b1ddcefb18b4",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "gender_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Gender Category Distribution",
+      "caption": "Gender Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/gender_category_distribution.png",
+      "sha256": "7192f0d70111045ad1db0515bba21db635dddc143b6b6a640431cdc46e4a39f7",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "gender_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Gender Churn Rate By Category",
+      "caption": "Gender Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/gender_churn_rate_by_category.png",
+      "sha256": "8984ce1346c2285bca72d3df625f270eb3bf11f44fec29efc619c27e7f8a21d9",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "initial_data_quality_findings_disposition_summary",
+      "logical_role": "data_quality_summary",
+      "chart_kind": "summary_chart",
+      "title": "Initial Data Quality Findings Disposition Summary",
+      "caption": "Initial Data Quality Findings Disposition Summary (data quality summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-16-Initial-Data-Quality-Findings",
+      "method": "matplotlib summary chart consolidating scripts/consolidate_quality_findings.py findings, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/initial_data_quality_findings_disposition_summary.png",
+      "sha256": "8580eed298cc21e936e8fdd6270ff64de8cc74ca4387c35aa963ae0ca5c202ef",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "initial_data_quality_findings_priority_matrix",
+      "logical_role": "data_quality_summary",
+      "chart_kind": "summary_chart",
+      "title": "Initial Data Quality Findings Priority Matrix",
+      "caption": "Initial Data Quality Findings Priority Matrix (data quality summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-16-Initial-Data-Quality-Findings",
+      "method": "matplotlib summary chart consolidating scripts/consolidate_quality_findings.py findings, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/initial_data_quality_findings_priority_matrix.png",
+      "sha256": "51020c6cb18a819fc47f116eaa7d34a51898a6c783e098fa35457c7f0a53f0ad",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "initial_data_quality_preparation_action_summary",
+      "logical_role": "data_quality_summary",
+      "chart_kind": "summary_chart",
+      "title": "Initial Data Quality Preparation Action Summary",
+      "caption": "Initial Data Quality Preparation Action Summary (data quality summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-16-Initial-Data-Quality-Findings",
+      "method": "matplotlib summary chart consolidating scripts/consolidate_quality_findings.py findings, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/initial_data_quality_preparation_action_summary.png",
+      "sha256": "3159b8cccbf414e7d1ec74018c2b8a30f921d73102440590cb06028771a5a9c5",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Internet Service Category Distribution",
+      "caption": "Internet Service Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_category_distribution.png",
+      "sha256": "1c3ef36a8cd2fb0be1044ab5f5dfd840d9627bd33ae803e398a3207c9e6cfd1a",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Internet Service Churn Rate By Category",
+      "caption": "Internet Service Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_churn_rate_by_category.png",
+      "sha256": "5a8d4eac6fada6deaa4a0e159745c6383a8d531202018447e25e503656325564",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_device_protection_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Internet Service Vs Device Protection Contingency Heatmap",
+      "caption": "Internet Service Vs Device Protection Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_device_protection_contingency_heatmap.png",
+      "sha256": "9f1cd6bbd07b37b8aa64a0b85b0e7ba845154b17e06c232cc8e8625271483208",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_monthly_charges_boxplot",
+      "logical_role": "categorical_vs_numerical_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Internet Service Vs Monthly Charges Boxplot",
+      "caption": "Internet Service Vs Monthly Charges Boxplot (categorical vs numerical boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib boxplot of a numerical feature grouped by a categorical feature, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_monthly_charges_boxplot.png",
+      "sha256": "8fd3a97dc7a872d5b018f61a0c0aa69b17c742a0d9dbb156ee92229d7cc71876",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_online_backup_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Internet Service Vs Online Backup Contingency Heatmap",
+      "caption": "Internet Service Vs Online Backup Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_online_backup_contingency_heatmap.png",
+      "sha256": "d96b233e4c8cb76c77b751df65d45f372a73fec600bea033e1daa04bea7293cd",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_online_security_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Internet Service Vs Online Security Contingency Heatmap",
+      "caption": "Internet Service Vs Online Security Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_online_security_contingency_heatmap.png",
+      "sha256": "773551725c6640ff601dba980398e2e67db5a19e1feddec37186aed71e29cc30",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_streaming_movies_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Internet Service Vs Streaming Movies Contingency Heatmap",
+      "caption": "Internet Service Vs Streaming Movies Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_streaming_movies_contingency_heatmap.png",
+      "sha256": "27ef987e085060adff5721b797f8087f03091cd31f6b42c130fb3a13ba9c0105",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_streaming_tv_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Internet Service Vs Streaming Tv Contingency Heatmap",
+      "caption": "Internet Service Vs Streaming Tv Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_streaming_tv_contingency_heatmap.png",
+      "sha256": "238c90c2ed436ec9c457c0b632fc7c0f24dfc1d4ceca1057dced772b70d3777b",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "internet_service_vs_tech_support_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Internet Service Vs Tech Support Contingency Heatmap",
+      "caption": "Internet Service Vs Tech Support Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/internet_service_vs_tech_support_contingency_heatmap.png",
+      "sha256": "035ee955e9501816e7954ebf26a499625cd9f2cd29b4ddb3b06a7a79ce08f0c6",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "key_exploratory_hypothesis_validation_plan",
+      "logical_role": "exploratory_insight_summary",
+      "chart_kind": "summary_matrix",
+      "title": "Key Exploratory Hypothesis Validation Plan",
+      "caption": "Key Exploratory Hypothesis Validation Plan (exploratory insight summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-17-Key-Exploratory-Insights",
+      "method": "matplotlib summary chart consolidating scripts/consolidate_exploratory_insights.py insight records, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/key_exploratory_hypothesis_validation_plan.png",
+      "sha256": "3cc18e39bd9d6a040c8af95689282e52d4a383cf3e164eed5fbaea9e567dfb78",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "key_exploratory_insights_evidence_matrix",
+      "logical_role": "exploratory_insight_summary",
+      "chart_kind": "summary_matrix",
+      "title": "Key Exploratory Insights Evidence Matrix",
+      "caption": "Key Exploratory Insights Evidence Matrix (exploratory insight summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-17-Key-Exploratory-Insights",
+      "method": "matplotlib summary chart consolidating scripts/consolidate_exploratory_insights.py insight records, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/key_exploratory_insights_evidence_matrix.png",
+      "sha256": "1631d9b7cdbbbe90a9a53c635e5797c519e09a930a394e07e3b7eba2e902818d",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "key_exploratory_insights_theme_summary",
+      "logical_role": "exploratory_insight_summary",
+      "chart_kind": "summary_matrix",
+      "title": "Key Exploratory Insights Theme Summary",
+      "caption": "Key Exploratory Insights Theme Summary (exploratory insight summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-17-Key-Exploratory-Insights",
+      "method": "matplotlib summary chart consolidating scripts/consolidate_exploratory_insights.py insight records, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/key_exploratory_insights_theme_summary.png",
+      "sha256": "a4664e146b1f42839a679dea1b5af155e664891559c72d2bbf1e059e32467209",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "monthly_charges_by_churn_boxplot",
+      "logical_role": "numerical_feature_vs_target_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Monthly Charges By Churn Boxplot",
+      "caption": "Monthly Charges By Churn Boxplot (numerical feature vs target boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib boxplot of a numerical feature split by target class, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/monthly_charges_by_churn_boxplot.png",
+      "sha256": "188ee572c794a055b347468b58131953be4effb9c519af6414cc1d5a3383a4a8",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "monthly_charges_churn_rate_by_quantile",
+      "logical_role": "numerical_feature_churn_rate_by_quantile",
+      "chart_kind": "bar_chart",
+      "title": "Monthly Charges Churn Rate By Quantile",
+      "caption": "Monthly Charges Churn Rate By Quantile (numerical feature churn rate by quantile).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by numerical-feature quantile bin, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/monthly_charges_churn_rate_by_quantile.png",
+      "sha256": "d9edc748c561d45ea71fde4c5977fa3f3ef8195f2c5e03fd5190e1a726bf6ba0",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "monthly_charges_distribution_histogram",
+      "logical_role": "numerical_feature_distribution",
+      "chart_kind": "histogram",
+      "title": "Monthly Charges Distribution Histogram",
+      "caption": "Monthly Charges Distribution Histogram (numerical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
+      "method": "matplotlib histogram of a numerical feature's distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/monthly_charges_distribution_histogram.png",
+      "sha256": "fe1df0fe752b4843cc7a7229fb91a904822b0daa5faa2fca7204ef4a9f99a082",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "monthly_charges_iqr_boxplot",
+      "logical_role": "numerical_feature_outlier_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Monthly Charges Iqr Boxplot",
+      "caption": "Monthly Charges Iqr Boxplot (numerical feature outlier boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
+      "method": "matplotlib boxplot highlighting IQR-based outlier candidates for a numerical feature, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/monthly_charges_iqr_boxplot.png",
+      "sha256": "8df061dba5f862b6c8957c94697e1680c2f1b2a533b43138f3bafb1497135cde",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "monthly_charges_vs_total_charges_scatter",
+      "logical_role": "numerical_relationship_scatter",
+      "chart_kind": "scatter_plot",
+      "title": "Monthly Charges Vs Total Charges Scatter",
+      "caption": "Monthly Charges Vs Total Charges Scatter (numerical relationship scatter).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/monthly_charges_vs_total_charges_scatter.png",
+      "sha256": "2db82b1ba87502a4c8fb01ce29c7bb01459d14c6b8acef920cab00727a3d5d66",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "multiple_lines_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Multiple Lines Category Distribution",
+      "caption": "Multiple Lines Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/multiple_lines_category_distribution.png",
+      "sha256": "197dd67333de6fdb03519f58b3d85607537be31a89abfae5937644d95fb60726",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "multiple_lines_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Multiple Lines Churn Rate By Category",
+      "caption": "Multiple Lines Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/multiple_lines_churn_rate_by_category.png",
+      "sha256": "e677f4ce70208198c80f10a4bb35aed69b4976e362d0be3c48cbff123c820837",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "online_backup_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Online Backup Category Distribution",
+      "caption": "Online Backup Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/online_backup_category_distribution.png",
+      "sha256": "062a41a72704a68232087c316b2ab73928934206d66d8d0dc90f32006cb6c391",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "online_backup_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Online Backup Churn Rate By Category",
+      "caption": "Online Backup Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/online_backup_churn_rate_by_category.png",
+      "sha256": "8b50bdd1c45874e477f7c9fc7cbab094f280c09867bd2f6eb7677b9b592fa4a7",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "online_security_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Online Security Category Distribution",
+      "caption": "Online Security Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/online_security_category_distribution.png",
+      "sha256": "96b99ca0e507c9c547c8c174fde6d4a37702c2e2d86c44716ded5df25b7b30a4",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "online_security_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Online Security Churn Rate By Category",
+      "caption": "Online Security Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/online_security_churn_rate_by_category.png",
+      "sha256": "ee68f1c347ad2f53a9bd08c2ef3e74d107f5a634a6a99ae7b66493052b1be684",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "paperless_billing_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Paperless Billing Category Distribution",
+      "caption": "Paperless Billing Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/paperless_billing_category_distribution.png",
+      "sha256": "aae1da0dfb78a8951a0ef8805948e33f6e03d3ed1e5b2f15804f40d2bfc15fb3",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "paperless_billing_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Paperless Billing Churn Rate By Category",
+      "caption": "Paperless Billing Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/paperless_billing_churn_rate_by_category.png",
+      "sha256": "32a29b30f0b992caed09c5d758754c3ddf83336da038a8527353b301d55449aa",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "partner_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Partner Category Distribution",
+      "caption": "Partner Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/partner_category_distribution.png",
+      "sha256": "c414ba1fe1b9e26349c06b60095047653807a9d60d9a3a2b4bd611742395c09b",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "partner_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Partner Churn Rate By Category",
+      "caption": "Partner Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/partner_churn_rate_by_category.png",
+      "sha256": "6f7194500a95a5951c261356490b687f7d90f6ed7dbc38b8c1f2074a2dfa3ad5",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "payment_method_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Payment Method Category Distribution",
+      "caption": "Payment Method Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/payment_method_category_distribution.png",
+      "sha256": "f57cf858511c99bf02ef113b213dbb64d06193c86a75f2315480b750d35a1813",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "payment_method_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Payment Method Churn Rate By Category",
+      "caption": "Payment Method Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/payment_method_churn_rate_by_category.png",
+      "sha256": "44ee0a631ef994c0ed98c5abfad5e7770fb46374662767fdd716d2daada5f3b3",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "phone_service_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Phone Service Category Distribution",
+      "caption": "Phone Service Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/phone_service_category_distribution.png",
+      "sha256": "644b1f9c7fa5322af20a88bde5d1c4b6cc4ffbf046636412ea0dcf7f182f29de",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "phone_service_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Phone Service Churn Rate By Category",
+      "caption": "Phone Service Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/phone_service_churn_rate_by_category.png",
+      "sha256": "a40dc72f7f34d2686be09de1e2a35b4c5a0f8fc383b6a5f17b47c5ebb14f2bd6",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "phone_service_vs_multiple_lines_contingency_heatmap",
+      "logical_role": "categorical_pairwise_contingency_heatmap",
+      "chart_kind": "heatmap",
+      "title": "Phone Service Vs Multiple Lines Contingency Heatmap",
+      "caption": "Phone Service Vs Multiple Lines Contingency Heatmap (categorical pairwise contingency heatmap).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/phone_service_vs_multiple_lines_contingency_heatmap.png",
+      "sha256": "8365861065313b7ca3536c0762736dd42e33ee7561f64944b47f780618f7d84f",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "potential_data_leakage_disposition_summary",
+      "logical_role": "leakage_summary",
+      "chart_kind": "governance_matrix",
+      "title": "Potential Data Leakage Disposition Summary",
+      "caption": "Potential Data Leakage Disposition Summary (leakage summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-15-Potential-Data-Leakage",
+      "method": "matplotlib governance matrix or summary chart consolidating scripts/analyze_leakage.py audit output, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/potential_data_leakage_disposition_summary.png",
+      "sha256": "07522fb3edb7fa9322733382b099c3f0ee45d1e5fa353928623e74c97e1267c1",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "potential_data_leakage_field_audit_matrix",
+      "logical_role": "leakage_summary",
+      "chart_kind": "governance_matrix",
+      "title": "Potential Data Leakage Field Audit Matrix",
+      "caption": "Potential Data Leakage Field Audit Matrix (leakage summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-15-Potential-Data-Leakage",
+      "method": "matplotlib governance matrix or summary chart consolidating scripts/analyze_leakage.py audit output, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/potential_data_leakage_field_audit_matrix.png",
+      "sha256": "3ab68d8b1852055408140ced8dbbc9d306174952bdc0a16184a3de4156451fd3",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "potential_data_leakage_transformation_audit_matrix",
+      "logical_role": "leakage_summary",
+      "chart_kind": "governance_matrix",
+      "title": "Potential Data Leakage Transformation Audit Matrix",
+      "caption": "Potential Data Leakage Transformation Audit Matrix (leakage summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-15-Potential-Data-Leakage",
+      "method": "matplotlib governance matrix or summary chart consolidating scripts/analyze_leakage.py audit output, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/potential_data_leakage_transformation_audit_matrix.png",
+      "sha256": "385782216143d7b149a2867f6f9bb7eb7c5f2d7872faecded3eb2e719a7a9881",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "preparation_decisions_execution_plan",
+      "logical_role": "preparation_decision_summary",
+      "chart_kind": "summary_chart",
+      "title": "Preparation Decisions Execution Plan",
+      "caption": "Preparation Decisions Execution Plan (preparation decision summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-18-Preparation-Decisions",
+      "method": "matplotlib summary chart consolidating scripts/record_preparation_decisions.py decisions, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/preparation_decisions_execution_plan.png",
+      "sha256": "e94cf0fb826feef33c768a0c3fb82e923c693129980b1a26bae071deff3212e2",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "preparation_decisions_scope_matrix",
+      "logical_role": "preparation_decision_summary",
+      "chart_kind": "summary_chart",
+      "title": "Preparation Decisions Scope Matrix",
+      "caption": "Preparation Decisions Scope Matrix (preparation decision summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-18-Preparation-Decisions",
+      "method": "matplotlib summary chart consolidating scripts/record_preparation_decisions.py decisions, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/preparation_decisions_scope_matrix.png",
+      "sha256": "7682cc4b37b008262bdf1dd955b7a3be62921d98806eda9e5f781e986aa21c39",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "preparation_decisions_status_summary",
+      "logical_role": "preparation_decision_summary",
+      "chart_kind": "summary_chart",
+      "title": "Preparation Decisions Status Summary",
+      "caption": "Preparation Decisions Status Summary (preparation decision summary).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-18-Preparation-Decisions",
+      "method": "matplotlib summary chart consolidating scripts/record_preparation_decisions.py decisions, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/preparation_decisions_status_summary.png",
+      "sha256": "7160376ae57f3edca9eb6faca2ff5d206d8d4711dc94493d1ee255eb3eecbd5b",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "senior_citizen_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Senior Citizen Category Distribution",
+      "caption": "Senior Citizen Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/senior_citizen_category_distribution.png",
+      "sha256": "9c764843786b39ce60231993588795b5ba8c4836e6dd487b025d14c9b268e285",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "senior_citizen_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Senior Citizen Churn Rate By Category",
+      "caption": "Senior Citizen Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/senior_citizen_churn_rate_by_category.png",
+      "sha256": "b1b186feaf09230ece0051953caa57190fe11609dc52e296d1d6ad0201897936",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "streaming_movies_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Streaming Movies Category Distribution",
+      "caption": "Streaming Movies Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/streaming_movies_category_distribution.png",
+      "sha256": "4f35040458b27ca9aa8967b20885ee6030afecedb0dbb7f3a692a2d4193596ef",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "streaming_movies_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Streaming Movies Churn Rate By Category",
+      "caption": "Streaming Movies Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/streaming_movies_churn_rate_by_category.png",
+      "sha256": "6a357246ceb49893ddf9dea0c2be1d4117706475238f8a895c9075213b82c4ee",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "streaming_tv_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Streaming Tv Category Distribution",
+      "caption": "Streaming Tv Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/streaming_tv_category_distribution.png",
+      "sha256": "a0da5b3e19c9e290f16994cf37c9734bcad89b84d3f8a7e20a28da0f7f887235",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "streaming_tv_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Streaming Tv Churn Rate By Category",
+      "caption": "Streaming Tv Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/streaming_tv_churn_rate_by_category.png",
+      "sha256": "66a85b9472dfbf88b0d61efa6a4cc1fbe386ba1977dc34ddef300410d505d643",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tech_support_category_distribution",
+      "logical_role": "categorical_feature_distribution",
+      "chart_kind": "bar_chart",
+      "title": "Tech Support Category Distribution",
+      "caption": "Tech Support Category Distribution (categorical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
+      "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tech_support_category_distribution.png",
+      "sha256": "b81dda88ae386fc00ae03cdfa3e6dc434b3269da88be255dc129a5dc22190e91",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tech_support_churn_rate_by_category",
+      "logical_role": "categorical_feature_churn_rate",
+      "chart_kind": "bar_chart",
+      "title": "Tech Support Churn Rate By Category",
+      "caption": "Tech Support Churn Rate By Category (categorical feature churn rate).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tech_support_churn_rate_by_category.png",
+      "sha256": "2859a4eda9140e559590749c150342b64f7e858e24a62fec370def197829302d",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_by_churn_boxplot",
+      "logical_role": "numerical_feature_vs_target_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Tenure By Churn Boxplot",
+      "caption": "Tenure By Churn Boxplot (numerical feature vs target boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib boxplot of a numerical feature split by target class, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_by_churn_boxplot.png",
+      "sha256": "862c3d9e978a8602945871a637e6054cf01c931a26f0973770958ab3a7dd6de3",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_churn_rate_by_quantile",
+      "logical_role": "numerical_feature_churn_rate_by_quantile",
+      "chart_kind": "bar_chart",
+      "title": "Tenure Churn Rate By Quantile",
+      "caption": "Tenure Churn Rate By Quantile (numerical feature churn rate by quantile).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by numerical-feature quantile bin, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_churn_rate_by_quantile.png",
+      "sha256": "d1558eea475326a308a2e5ee6188e098981de650aa05c353e99b8a18d303e3ff",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_distribution_histogram",
+      "logical_role": "numerical_feature_distribution",
+      "chart_kind": "histogram",
+      "title": "Tenure Distribution Histogram",
+      "caption": "Tenure Distribution Histogram (numerical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
+      "method": "matplotlib histogram of a numerical feature's distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_distribution_histogram.png",
+      "sha256": "eb0f565be4b240f8887437c5759f4206b59e2c3d0cbb540df0f2c082abe9a161",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_iqr_boxplot",
+      "logical_role": "numerical_feature_outlier_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Tenure Iqr Boxplot",
+      "caption": "Tenure Iqr Boxplot (numerical feature outlier boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
+      "method": "matplotlib boxplot highlighting IQR-based outlier candidates for a numerical feature, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_iqr_boxplot.png",
+      "sha256": "54dc0a2dd018550ac4e036abd0b5b9e7b3f6b08b08b6c24c4716ca944a78cc58",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_monthly_charges_product_vs_total_charges_scatter",
+      "logical_role": "numerical_relationship_scatter",
+      "chart_kind": "scatter_plot",
+      "title": "Tenure Monthly Charges Product Vs Total Charges Scatter",
+      "caption": "Tenure Monthly Charges Product Vs Total Charges Scatter (numerical relationship scatter).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_monthly_charges_product_vs_total_charges_scatter.png",
+      "sha256": "807c7f5e21b1d036378187b498e1b2156f4071e4b59ba7a96e84ba0f41b9be4e",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_vs_monthly_charges_scatter",
+      "logical_role": "numerical_relationship_scatter",
+      "chart_kind": "scatter_plot",
+      "title": "Tenure Vs Monthly Charges Scatter",
+      "caption": "Tenure Vs Monthly Charges Scatter (numerical relationship scatter).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_vs_monthly_charges_scatter.png",
+      "sha256": "69b6ce63a55d7f0cd99cf4f223d97c9668d27991b42ff1b2f2f63486bfa97a00",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "tenure_vs_total_charges_scatter",
+      "logical_role": "numerical_relationship_scatter",
+      "chart_kind": "scatter_plot",
+      "title": "Tenure Vs Total Charges Scatter",
+      "caption": "Tenure Vs Total Charges Scatter (numerical relationship scatter).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
+      "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/tenure_vs_total_charges_scatter.png",
+      "sha256": "7a933617ec62fd21eafd5a20c39bcf26015b72f84d6e00cfc851064d3697b576",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "total_charges_by_churn_boxplot",
+      "logical_role": "numerical_feature_vs_target_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Total Charges By Churn Boxplot",
+      "caption": "Total Charges By Churn Boxplot (numerical feature vs target boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib boxplot of a numerical feature split by target class, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/total_charges_by_churn_boxplot.png",
+      "sha256": "00c2304091ae55d7c11dd76e1dc45fa89770f16f9445713405bf6a9d9752dbf7",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "total_charges_churn_rate_by_quantile",
+      "logical_role": "numerical_feature_churn_rate_by_quantile",
+      "chart_kind": "bar_chart",
+      "title": "Total Charges Churn Rate By Quantile",
+      "caption": "Total Charges Churn Rate By Quantile (numerical feature churn rate by quantile).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
+      "method": "matplotlib bar chart of churn rate by numerical-feature quantile bin, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/total_charges_churn_rate_by_quantile.png",
+      "sha256": "21af6c81a9e64d8ca3d05af1c781fa374d3559882c0b5090e2718ff029fd1553",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "total_charges_distribution_histogram",
+      "logical_role": "numerical_feature_distribution",
+      "chart_kind": "histogram",
+      "title": "Total Charges Distribution Histogram",
+      "caption": "Total Charges Distribution Histogram (numerical feature distribution).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
+      "method": "matplotlib histogram of a numerical feature's distribution, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/total_charges_distribution_histogram.png",
+      "sha256": "6c00f2c9c5fe01b8ffee4db28949b09bd92249237f869b731ef7eeaff206a046",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    },
+    {
+      "visual_id": "total_charges_iqr_boxplot",
+      "logical_role": "numerical_feature_outlier_boxplot",
+      "chart_kind": "boxplot",
+      "title": "Total Charges Iqr Boxplot",
+      "caption": "Total Charges Iqr Boxplot (numerical feature outlier boxplot).",
+      "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
+      "method": "matplotlib boxplot highlighting IQR-based outlier candidates for a numerical feature, generated directly in the notebook cell.",
+      "relative_asset_path": "docs/images/total_charges_iqr_boxplot.png",
+      "sha256": "224219796c38b2b362a3705bd1c666e8b915fbc8f7775dc832867ce52ad78add",
+      "public_suitability": true,
+      "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
+      "provenance": {
+        "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+      }
+    }
+  ]
+}
