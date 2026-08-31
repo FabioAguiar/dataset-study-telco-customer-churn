@@ -1,26 +1,8 @@
-<!--
-Reusable dataset-study README structure
+# Telco Customer Churn — Dataset Study
 
-Keep this order in future projects:
-1. Overview and scope
-2. Dataset and target contract
-3. Data quality and preparation
-4. Selected visual evidence
-5. Model selection
-6. Final holdout evaluation
-7. Threshold or decision-policy trade-offs
-8. Inference demonstration
-9. Reproducibility
-10. Limitations and operational readiness
+End-to-end, reproducible study of the **Telco Customer Churn** dataset. The project covers source acquisition, structural validation, exploratory analysis, deterministic preparation, model-family comparison, hyperparameter search, final holdout evaluation, model bundling, and a controlled educational inference demonstration.
 
-Only include charts that communicate one clear, decision-relevant result.
-Keep exhaustive EDA and diagnostic figures in notebooks or documentation folders.
--->
-
-# Telco Customer Churn Dataset Study
-
-End-to-end, reproducible study of the **Telco Customer Churn** dataset, covering data acquisition, structural validation, exploratory analysis, deterministic preparation, model selection, final holdout evaluation, model bundling, and a safe educational inference demonstration.
-
+The analysis is predictive rather than causal. It measures whether observed customer-account characteristics contain signal for distinguishing `Churn = Yes` from `Churn = No`; it does not establish that changing any individual feature would change future churn behavior.
 
 ## At a glance
 
@@ -30,18 +12,24 @@ End-to-end, reproducible study of the **Telco Customer Churn** dataset, covering
 | Source rows | 7,043 |
 | Source columns | 21 |
 | Model features | 19 |
-| Positive class | `Churn = Yes` |
-| Churn prevalence | 26.54% |
+| Identifier excluded from modeling | `customerID` |
+| Target | `Churn` |
+| Positive class | `Yes` |
+| Positive-class prevalence | 26.54% |
+| Problem type | Binary classification |
+| Primary model-selection metric | Average Precision |
 | Selected model | HistGradientBoostingClassifier |
 | Validation Average Precision | 0.6708 |
-| Final test Average Precision | 0.6413 |
-| Final test ROC-AUC | 0.8402 |
-| Educational threshold | 0.2578 |
+| Final-test Average Precision | 0.6413 |
+| Final-test ROC-AUC | 0.8402 |
+| Frozen educational threshold | 0.2578 |
 | Operational prediction available | No |
 
-## Study objectives
+## Study objective
 
-This project demonstrates a reusable workflow for dataset studies in which analytical decisions remain visible in notebooks while reusable validation and operational logic is kept in Python modules.
+The study asks whether customer profile, service, contract, billing, payment, tenure, and charge information can predict the probability of `Churn = Yes` under a controlled random-snapshot evaluation protocol.
+
+The workflow is designed to keep analytical decisions visible while moving reusable validation, preparation, model-selection, finalization, and inference logic into tested Python modules.
 
 The study aims to:
 
@@ -49,52 +37,32 @@ The study aims to:
 - preserve immutable raw data and deterministic preparation rules;
 - prevent identifier and target leakage;
 - isolate train, validation, and test partitions;
-- compare candidate models with metrics appropriate for class imbalance;
-- evaluate the selected model exactly once on the sealed test partition;
-- serialize the complete preprocessing and model pipeline;
+- compare multiple model families under one feature and evaluation contract;
+- expose the actual hyperparameter search policy used for every candidate family;
+- select the final candidate without consulting the sealed test partition;
+- evaluate the selected model exactly once on final test;
+- serialize preprocessing and estimator logic as one fitted pipeline;
 - validate artifact integrity and runtime compatibility before deserialization;
-- demonstrate local inference without retraining or persisting customer inputs.
+- demonstrate inference without claiming operational readiness.
 
-## Workflow
+## Dataset and source
 
-```text
-Raw dataset
-    ↓
-01 — Understanding and exploratory analysis
-    ↓
-02 — Deterministic data preparation and partitioning
-    ↓
-03 — Model selection and validation-threshold analysis
-    ↓
-04 — Final training, sealed-test evaluation, and model bundle
-    ↓
-05 — Trusted educational inference demonstration
-```
+The study uses the Kaggle dataset [`blastchar/telco-customer-churn`](https://www.kaggle.com/datasets/blastchar/telco-customer-churn).
 
-## Dataset and prediction contract
-
-The source dataset represents one row per customer account.
+Each row represents one customer account.
 
 | Role | Columns |
 |---|---|
 | Identifier | `customerID` |
 | Target | `Churn` |
 | Numerical features | `tenure`, `MonthlyCharges`, `TotalCharges` |
-| Categorical features | 16 service, customer, contract, billing, and payment fields |
+| Categorical features | 16 customer, service, contract, billing, and payment fields |
 | Positive class | `Yes` |
 | Negative class | `No` |
 
 The model excludes `customerID` and never receives `Churn` as an input feature.
 
-### Source
-
-The study uses the Kaggle dataset handle:
-
-```text
-blastchar/telco-customer-churn
-```
-
-Download it with:
+Download the source through the project acquisition utility:
 
 ```bash
 python -m scripts.download_data kaggle \
@@ -106,129 +74,153 @@ Raw and generated datasets are intentionally excluded from version control.
 
 ## Data quality and preparation
 
-The source contains 7,043 unique customer accounts and no missing or duplicated identifiers.
+The source contains 7,043 unique customer accounts and no duplicated customer identifiers.
 
-The only materialized source-quality correction is the declared `TotalCharges` rule:
+The principal source-quality issue is limited to `TotalCharges`:
 
-- 11 blank raw values were identified;
-- every blank occurred when `tenure == 0`;
-- those values were deterministically materialized as `0.0`;
-- no row was removed;
-- no generic mean, median, mode, or learned imputation was introduced.
+- 11 raw values are blank;
+- every blank occurs where `tenure == 0`;
+- those values are deterministically materialized as `0.0`;
+- no row is removed;
+- no mean, median, mode, or learned imputation rule is introduced for this correction.
 
-The prepared snapshot is split reproducibly with stratification and seed `42`:
+The prepared snapshot is split reproducibly using stratification and random seed `42`:
 
 | Partition | Rows | Purpose |
 |---|---:|---|
-| Train | 4,930 | Model search and cross-validation |
+| Train | 4,930 | Cross-validation and hyperparameter search |
 | Validation | 1,056 | Candidate comparison and educational threshold selection |
-| Test | 1,057 | Final evaluation only |
+| Test | 1,057 | One-time final evaluation only |
+| Final fit | 5,986 | Train plus validation after selection is frozen |
 
-The test partition remained sealed throughout feature, model, hyperparameter, and threshold selection.
+The test partition remains sealed during feature decisions, hyperparameter search, model selection, and threshold selection.
 
-## Target distribution
+Categorical variables are encoded inside the fitted pipeline with `OneHotEncoder(handle_unknown="ignore")`. Numerical scaling is applied only to Logistic Regression during candidate search; the selected HistGradientBoosting pipeline uses numerical passthrough.
 
-The positive class is meaningful but not dominant: 1,869 of 7,043 accounts have `Churn = Yes`.
+## Exploratory evidence
 
-This imbalance makes accuracy insufficient as a primary selection metric. The project therefore prioritizes Average Precision and also reports ROC-AUC, precision, recall, F1, F2, balanced accuracy, Brier Score, and Log Loss.
+Exploratory results describe **associations in this dataset snapshot**. They must not be interpreted as causal effects.
 
-<p align="center">
-  <a href="docs/images/churn_target_class_distribution.png">
-    <img src="docs/images/churn_target_class_distribution.png" alt="Distribution of the Churn target classes" width="720">
-  </a>
-</p>
+### Target distribution
 
-## Key exploratory findings
+The target contains 5,174 `No` observations and 1,869 `Yes` observations.
 
-The exploratory results describe **associations in this snapshot**. They do not establish causality or prove that changing a feature will change churn.
+| Churn class | Observations | Share |
+|---|---:|---:|
+| `No` | 5,174 | 73.46% |
+| `Yes` | 1,869 | 26.54% |
 
-### Contract type is the strongest categorical association
+The positive class is sufficiently less frequent than the negative class that accuracy alone would provide an incomplete model-selection signal. The study therefore prioritizes Average Precision and records additional probability and threshold-dependent metrics.
 
-Observed churn rates differ substantially by contract term:
+![Distribution of the Churn target classes](docs/images/churn_target_class_distribution.png)
 
-| Contract | Churn rate |
+### Contract term is strongly associated with observed churn
+
+Observed churn rates differ substantially across contract categories:
+
+| Contract | Observed churn rate |
 |---|---:|
 | Month-to-month | 42.71% |
 | One year | 11.27% |
 | Two year | 2.83% |
 
-<p align="center">
-  <a href="docs/images/contract_churn_rate_by_category.png">
-    <img src="docs/images/contract_churn_rate_by_category.png" alt="Churn rate by contract category" width="900">
-  </a>
-</p>
+![Observed churn rate by contract category](docs/images/contract_churn_rate_by_category.png)
 
-The result supports further investigation of contract structure, customer selection effects, and retention timing. It must not be interpreted as proof that moving a customer to a longer contract would independently prevent churn.
+Month-to-month accounts show much higher observed churn than accounts on longer contracts. This is predictive evidence, not proof that changing contract type would independently prevent churn.
 
-### Churn is concentrated in earlier tenure periods
+### Churn is concentrated in shorter observed relationships
 
-Customers with churn have a substantially shorter observed relationship duration than customers without churn. Across tenure quantiles, churn falls from approximately 58.4% in the first quantile to approximately 3.5% in the last.
+Across tenure quantiles, observed churn decreases from approximately 58.4% in the earliest-tenure group to approximately 3.5% in the latest.
 
-<p align="center">
-  <a href="docs/images/tenure_churn_rate_by_quantile.png">
-    <img src="docs/images/tenure_churn_rate_by_quantile.png" alt="Churn rate by tenure quantile" width="900">
-  </a>
-</p>
+![Observed churn rate by tenure quantile](docs/images/tenure_churn_rate_by_quantile.png)
 
-This pattern highlights the beginning of the customer relationship as an important analytical region. Since tenure is also a consequence of remaining a customer, the relationship should not be presented as a causal effect.
+Tenure contains substantial predictive signal, but it is also mechanically related to how long an account has already remained active. The relationship is therefore not a causal retention effect.
 
-### Service and billing variables contribute additional signal
+### Service, support, and billing variables add additional signal
 
 The strongest categorical associations with churn include contract type, online security, technical support, internet service, and payment method.
 
-<p align="center">
-  <a href="docs/images/feature_to_target_categorical_association_ranking.png">
-    <img src="docs/images/feature_to_target_categorical_association_ranking.png" alt="Ranking of categorical feature associations with churn" width="900">
-  </a>
-</p>
+![Ranking of categorical feature associations with churn](docs/images/feature_to_target_categorical_association_ranking.png)
 
-The ranking is based on association strength. It does not show causal direction and should be read together with the category-level plots in `docs/images/` and the analysis in Notebook 01.
+These rankings describe association strength in the observed sample. They do not identify intervention effects.
+
+## Evaluation protocol
+
+Model selection is performed only with train and validation data.
+
+| Component | Contract |
+|---|---|
+| Evaluation mode | Stratified random snapshot |
+| Primary selection metric | Average Precision |
+| Cross-validation | 5-fold `StratifiedKFold` |
+| CV shuffle | `True` |
+| CV random seed | `42` |
+| Search refit metric | Average Precision |
+| Dummy eligibility margin | Candidate AP must exceed Dummy AP by more than `0.01` |
+| Practical-tie tolerance | Validation AP difference `<= 0.01` with overlapping approximate CV intervals |
+| Threshold-selection partition | Validation |
+| Final-test use before selection | Prohibited |
+
+Average Precision is primary because the positive class is the minority class. ROC-AUC, precision, recall, F1, F2, balanced accuracy, Brier Score, and Log Loss are retained as complementary evidence.
 
 ## Model selection
 
-The project compares a prior-only dummy baseline with four model families under the same feature contract and validation policy:
+### Candidate comparison
 
-- Logistic Regression;
-- Decision Tree;
-- Random Forest;
-- HistGradientBoostingClassifier.
+The Dummy prior classifier establishes a non-eligible baseline. Four model families are eligible for selection.
 
-Average Precision is the primary selection metric because the positive class is the minority class.
+The table below reports the best cross-validation result produced by each candidate search and the corresponding one-time validation evaluation at threshold `0.50`.
 
-| Model | Validation AP | Validation ROC-AUC | Brier Score ↓ |
-|---|---:|---:|---:|
-| HistGradientBoosting | **0.6708** | **0.8477** | **0.1332** |
-| Logistic Regression | 0.6688 | 0.8470 | 0.1339 |
-| Random Forest | 0.6679 | 0.8475 | 0.1593 |
-| Decision Tree | 0.6134 | 0.8161 | 0.1462 |
-| Dummy prior | 0.2652 | 0.5000 | 0.1948 |
+| Model | Search | CV AP mean ± std | Validation AP | Validation ROC-AUC | Validation Brier ↓ | Selection status |
+|---|---|---:|---:|---:|---:|---|
+| HistGradientBoostingClassifier | RandomizedSearchCV | **0.6728 ± 0.0161** | **0.6708** | **0.8477** | **0.1332** | **Selected** |
+| Logistic Regression | GridSearchCV | 0.6591 ± 0.0129 | 0.6688 | 0.8470 | 0.1339 | Practical-tie finalist |
+| Random Forest | RandomizedSearchCV | 0.6659 ± 0.0123 | 0.6679 | 0.8475 | 0.1593 | Eligible candidate |
+| Decision Tree | GridSearchCV | 0.6194 ± 0.0234 | 0.6134 | 0.8161 | 0.1462 | Eligible candidate |
+| Dummy prior | No search | — | 0.2652 | 0.5000 | 0.1948 | Baseline only |
 
-HistGradientBoosting and Logistic Regression formed a **practical tie** in validation Average Precision. HistGradientBoosting was selected through the predeclared tie-break rule because it achieved the lower validation Brier Score.
+HistGradientBoosting and Logistic Regression satisfy the study's practical-tie condition on validation Average Precision. The predefined first decisive tie-break is lower validation Brier Score, which favors HistGradientBoosting (`0.133203` versus `0.133898`).
 
-The selected estimator uses:
+### Candidate search configuration and hyperparameters
 
-```text
-learning_rate       = 0.03
-max_iter            = 200
-max_depth           = 3
-max_leaf_nodes      = 7
-min_samples_leaf    = 40
-l2_regularization   = 1.0
-random_state        = 42
-```
+The search policy is frozen before validation evaluation. The values below are the **actual hyperparameter spaces evaluated by Notebook 03**, not generic examples.
+
+| Model | Search policy | Evaluated configurations | Fixed estimator settings | Hyperparameters explored |
+|---|---|---:|---|---|
+| Logistic Regression | GridSearchCV | 24 | `solver=liblinear`; `max_iter=2000`; `random_state=42`; numerical `StandardScaler` | `C={0.001,0.01,0.1,1,10,100}`; `penalty={l1,l2}`; `class_weight={None,balanced}` |
+| Decision Tree | GridSearchCV | 48 | `random_state=42` | `criterion={gini,entropy}`; `max_depth={3,5,8,None}`; `min_samples_leaf={1,10,30}`; `class_weight={None,balanced}` |
+| Random Forest | RandomizedSearchCV | 40 | `random_state=42`; estimator `n_jobs=1`; search `n_jobs=4` | `n_estimators={300,500,800}`; `max_depth={None,8,12,20}`; `min_samples_split={2,10,20}`; `min_samples_leaf={1,2,5,10}`; `max_features={sqrt,0.5,None}`; `class_weight={None,balanced,balanced_subsample}` |
+| HistGradientBoosting | RandomizedSearchCV | 40 | `random_state=42`; search `n_jobs=4` | `learning_rate={0.03,0.05,0.1,0.2}`; `max_iter={100,200,400}`; `max_leaf_nodes={7,15,31,63}`; `max_depth={None,3,5,8}`; `min_samples_leaf={10,20,40}`; `l2_regularization={0,0.01,0.1,1,10}` |
+| Dummy prior | No search | 1 | `strategy=prior` | None |
+
+The generated model-selection artifacts preserve the detailed search outcomes for runtime auditability. The downstream handoff freezes only the configuration selected for finalization.
+
+### Selected configuration
+
+The winning HistGradientBoosting configuration is:
+
+| Hyperparameter | Selected value |
+|---|---:|
+| `learning_rate` | 0.03 |
+| `max_iter` | 200 |
+| `max_depth` | 3 |
+| `max_leaf_nodes` | 7 |
+| `min_samples_leaf` | 40 |
+| `l2_regularization` | 1.0 |
+| `random_state` | 42 |
 
 The final serialized object is a complete scikit-learn `Pipeline` containing:
 
 - a `ColumnTransformer`;
 - numerical passthrough;
-- a fitted `OneHotEncoder(handle_unknown="ignore")`;
+- a fitted `OneHotEncoder(handle_unknown="ignore")` for categorical features;
 - the fitted `HistGradientBoostingClassifier`.
 
-No external preprocessing is required during inference.
+No external preprocessing step is required during inference.
 
 ## Final holdout evaluation
 
-After model selection, the chosen pipeline was trained once on train plus validation data and evaluated once on the sealed test partition.
+After model selection and educational-threshold selection are frozen, the selected pipeline is fitted once on train plus validation data and evaluated exactly once on the sealed test partition.
 
 | Metric | Validation | Final test | Test − validation |
 |---|---:|---:|---:|
@@ -237,19 +229,21 @@ After model selection, the chosen pipeline was trained once on train plus valida
 | Brier Score ↓ | 0.1332 | **0.1394** | +0.0062 |
 | Log Loss ↓ | 0.4135 | **0.4207** | +0.0072 |
 
-The model retained useful ranking ability on the holdout, with a moderate reduction in Average Precision and no evidence of a performance collapse within the same random-snapshot contract.
+The holdout retains useful ranking performance, with a moderate reduction in Average Precision and no evidence of a performance collapse within the same random-snapshot contract.
 
-These results do **not** establish temporal generalization or production performance.
+These results do **not** establish temporal generalization, prospective performance, calibration adequacy for production, or intervention effectiveness.
 
-## Educational threshold trade-off
+## Threshold and decision-policy diagnostics
 
-Threshold selection was performed on the validation partition. The frozen educational threshold is:
+Threshold selection is performed only on validation data. The frozen educational rule maximizes precision subject to validation recall of at least `0.80`.
+
+The selected educational threshold is:
 
 ```text
 0.2577809673219062
 ```
 
-It was selected to satisfy an educational recall target of at least 0.80. It is not an operational policy.
+It is an educational decision rule, not a business-optimal operating point.
 
 | Final-test result | Threshold 0.50 | Educational threshold 0.2578 |
 |---|---:|---:|
@@ -263,77 +257,68 @@ It was selected to satisfy an educational recall target of at least 0.80. It is 
 | False positives | 84 | 215 |
 | Predicted positives | 224 | 441 |
 
-The lower threshold identifies 86 additional churn cases in the final test but also creates 131 additional false positives. This makes the business trade-off explicit: an operational threshold would require intervention cost, customer value, campaign capacity, and error-cost information that is not available in this study.
+Relative to threshold `0.50`, the lower educational threshold identifies 86 additional positive test cases while producing 131 additional false positives. An operational threshold would require customer value, intervention cost, campaign capacity, and asymmetric error-cost information that this dataset does not provide.
 
-## Educational inference demonstration
+## Inference contract and demonstration
 
-Notebook 05 demonstrates trusted, local inference using synthetic inputs created in memory.
+Notebook 05 demonstrates trusted local inference using synthetic inputs created in memory.
 
-The inference flow validates, in order:
+The inference flow validates:
 
 1. final-model handoff integrity;
 2. inference-bundle integrity;
 3. educational readiness and non-operational flags;
-4. relative artifact path safety;
+4. artifact path safety;
 5. model file existence and SHA-256;
 6. handoff, manifest, and bundle alignment;
-7. runtime compatibility before `joblib.load`;
+7. runtime compatibility before deserialization;
 8. explicit `trusted_source=True`;
-9. loaded pipeline structure and fitted-state contract;
-10. input schema, missing-value policy, unknown categories, and output contract.
+9. fitted pipeline structure and state;
+10. input schema, missing-value policy, unknown categories, and output semantics.
 
-The demonstration supports:
-
-- a single mapping or pandas Series;
-- a single-row or multi-row pandas DataFrame;
-- defensive copies and preserved indices;
-- the declared `TotalCharges` blank rule;
-- deterministic unknown-category reporting;
-- positive-class probabilities;
-- educational threshold classification.
+The demonstration supports a mapping, pandas Series, or one/multiple-row pandas DataFrame and returns positive-class probabilities plus the educational threshold classification.
 
 It does not:
 
-- access train, validation, or test data to build examples;
+- use train, validation, or test observations as inference examples;
 - call `fit` or `fit_transform`;
-- persist inputs, probabilities, or predictions;
-- expose an API endpoint;
-- claim operational validity.
+- persist customer inputs, probabilities, or predictions;
+- expose an operational API;
+- establish production validity.
 
-Every result preserves:
+Every demonstration result preserves:
 
 ```text
 operational_prediction_available = false
 ```
 
-## Notebook guide
+## Workflow and notebooks
+
+```text
+Raw dataset
+    ↓
+01 — Understanding and exploratory analysis
+    ↓
+02 — Deterministic preparation and partitioning
+    ↓
+03 — Candidate search, model comparison, and threshold analysis
+    ↓
+04 — Frozen final fit, one-time test evaluation, and model bundle
+    ↓
+05 — Trusted educational inference demonstration
+```
 
 | Notebook | Responsibility |
 |---|---|
 | [`01_data_understanding_and_exploration.ipynb`](notebooks/01_data_understanding_and_exploration.ipynb) | Dataset context, quality validation, EDA, leakage review, and preparation decisions |
 | [`02_data_preparation.ipynb`](notebooks/02_data_preparation.ipynb) | Deterministic correction, feature contract, stratified partitioning, and preparation handoff |
-| [`03_model_selection_and_evaluation.ipynb`](notebooks/03_model_selection_and_evaluation.ipynb) | Baseline, candidate search, validation comparison, and educational threshold selection |
-| [`04_final_model_and_bundle.ipynb`](notebooks/04_final_model_and_bundle.ipynb) | Final fit, one-time test evaluation, serialization, manifests, and inference bundle |
+| [`03_model_selection_and_evaluation.ipynb`](notebooks/03_model_selection_and_evaluation.ipynb) | Dummy baseline, candidate searches, CV evidence, validation comparison, selection, and educational threshold |
+| [`04_final_model_and_bundle.ipynb`](notebooks/04_final_model_and_bundle.ipynb) | Frozen final fit, one-time final-test evaluation, serialization, manifests, and inference bundle |
 | [`05_inference_demo.ipynb`](notebooks/05_inference_demo.ipynb) | Runtime gate, trusted loading, input normalization, and educational inference examples |
 
-## Project structure
+## Reproducibility
 
-```text
-.
-├── api/                  Reserved future runtime/API scaffold
-├── artifacts/            Runtime-generated manifests and model artifacts
-├── data/                 Raw, interim, processed, and external data areas
-├── docs/images/          Exported exploratory figures
-├── notebooks/            Analytical narrative and dataset-specific decisions
-├── scripts/              Reusable validation, analysis, preparation, and inference logic
-├── tests/                Unit tests for reusable modules and contracts
-├── pyproject.toml         Package metadata and dependency groups
-└── README.md              Project overview and selected evidence
-```
-
-Generated data, JSON/CSV evidence, serialized models, caches, environments, and credentials are excluded from version control.
-
-## Environment setup
+### Environment setup
 
 Create or activate a Python 3.10+ environment and install the project from the repository root:
 
@@ -356,24 +341,22 @@ Start JupyterLab:
 python -m jupyter lab
 ```
 
-### Serialized-model runtime
+### Recorded serialized-model runtime
 
 The final inference bundle records the runtime used to create and validate the model artifact:
 
-```text
-Python        3.13.13
-pandas        3.0.5
-scikit-learn  1.9.0
-joblib        1.5.3
-```
+| Component | Recorded version |
+|---|---:|
+| Python | 3.13.13 |
+| pandas | 3.0.5 |
+| scikit-learn | 1.9.0 |
+| joblib | 1.5.3 |
 
-The educational loader checks runtime compatibility before deserializing the joblib artifact. A compatible major/minor Python runtime and exact pandas, scikit-learn, and joblib versions are required for the real model load.
+The educational loader checks runtime compatibility before deserializing the joblib artifact.
 
-## Reproducing the study
+### Reproducing the notebooks
 
-Run the notebooks in numerical order from a fresh kernel. Each stage validates the previous handoff before continuing.
-
-A command-line execution pattern is:
+Run the notebooks in numerical order from a fresh kernel. Each stage validates the persisted handoff produced by the previous stage.
 
 ```bash
 for notebook in \
@@ -391,17 +374,17 @@ do
 done
 ```
 
-Before running Notebook 05, confirm that the process matches the runtime contract stored in the inference bundle.
+Before Notebook 05, the process runtime must satisfy the compatibility contract stored in the inference bundle.
 
-## Tests
+### Tests
 
-Run the complete reusable test suite with:
+Run the reusable test suite with:
 
 ```bash
 PYTHONPATH=. python -m pytest
 ```
 
-Run the educational inference tests separately with:
+Run the inference tests separately with:
 
 ```bash
 PYTHONPATH=. python -m pytest tests/test_smoke_predict.py
@@ -413,58 +396,77 @@ Compile-check the inference module with:
 python -m py_compile scripts/smoke_predict.py
 ```
 
+## Repository structure
+
+```text
+.
+├── api/                  Reserved future runtime/API scaffold
+├── artifacts/            Runtime-generated manifests and model artifacts
+├── data/                 Raw, interim, processed, and external data areas
+├── docs/images/          Exported exploratory evidence
+├── notebooks/            Dataset-specific analytical narrative and decisions
+├── scripts/              Reusable validation, analysis, preparation, and inference logic
+├── tests/                Unit tests for reusable modules and contracts
+├── pyproject.toml         Package metadata and dependency groups
+└── README.md              Scientific project overview and selected evidence
+```
+
+Generated data, runtime JSON/CSV evidence, serialized models, caches, environments, and credentials are excluded from version control.
+
 ## Reproducibility and integrity controls
 
 The workflow records and validates:
 
 - feature and target contracts;
 - partition paths, row counts, class counts, and SHA-256 hashes;
-- artifact byte hashes;
-- semantic fingerprints;
-- selected model and hyperparameters;
-- educational threshold origin;
-- test-access count;
+- artifact byte hashes and semantic fingerprints;
+- model-search strategies and parameter spaces;
+- selected model and frozen hyperparameters;
+- educational-threshold origin;
+- final-test access count;
 - runtime versions;
 - model-state fingerprint;
-- trusted-source confirmation before deserialization.
+- trusted-source confirmation before model deserialization.
 
 These controls make the study auditable without treating generated runtime artifacts as source code.
 
-## Limitations
-
-- The evaluation uses a stratified random snapshot, not a temporal holdout.
-- Associations in the exploratory analysis are not causal effects.
-- Production-time feature availability and latency are unconfirmed.
-- The educational threshold is not a business decision policy.
-- False-positive and false-negative business costs are unavailable.
-- No intervention-uplift or retention-effectiveness study was performed.
-- No subgroup fairness or stability assessment was established for deployment.
-- No drift monitoring or scheduled retraining policy exists.
-- `api/` is a reserved scaffold and does not provide an implemented endpoint.
-- Predictions are educational and must not drive automated customer decisions.
-
-## Current readiness
+## Limitations and readiness
 
 | Capability | Status |
 |---|---|
 | Dataset understanding and EDA | Completed |
 | Deterministic preparation | Completed |
-| Model selection | Completed |
+| Multi-family model selection | Completed |
 | Final model training | Completed |
-| One-time final test evaluation | Completed |
+| One-time final-test evaluation | Completed |
 | Model artifact and inference bundle | Materialized at runtime |
 | Educational inference demonstration | Completed in the recorded compatible runtime |
 | Operational modeling validity | Unconfirmed |
 | Operational threshold | Unresolved |
 | Temporal validity | Unresolved |
-| Feature inference availability | Unconfirmed |
+| Production feature availability | Unconfirmed |
 | API implementation | Not implemented |
 | Operational prediction | Unavailable |
 
+Additional limitations:
+
+- the evaluation uses a stratified random snapshot rather than a temporal or prospective holdout;
+- observed associations and model importance are not causal effects;
+- future distribution stability has not been evaluated;
+- the dataset's external representativeness is not established;
+- business costs for false positives and false negatives are unavailable;
+- no intervention-uplift or retention-effectiveness analysis was performed;
+- no subgroup fairness assessment is established;
+- no production drift-monitoring or retraining policy is evaluated;
+- the educational threshold is not a validated retention policy;
+- the study does not establish the safety or effectiveness of automated customer decisions.
+
 ## Responsible interpretation
 
-The project supports the following conclusion:
+The study demonstrates useful predictive structure for distinguishing customer accounts associated with `Churn = Yes` in this dataset snapshot. Contract term, tenure, charges, internet service, and related service variables contain meaningful predictive information, while HistGradientBoosting and Logistic Regression perform similarly under the defined validation protocol.
 
-> In this educational snapshot, churn is strongly associated with shorter tenure, month-to-month contracts, and selected service and billing characteristics. HistGradientBoosting was selected in a practical tie with Logistic Regression and achieved a final test Average Precision of 0.6413. Lowering the educational threshold substantially increases recall while also increasing false positives, so no operational threshold or automated retention action is justified by this study alone.
+HistGradientBoosting is selected through the predefined Brier-score tie-break and achieves final-test Average Precision `0.6413` and ROC-AUC `0.8402` in the study's sealed random holdout.
 
-For exhaustive analysis, inspect the notebooks and the complete figure set under [`docs/images/`](docs/images/).
+These results support an educational binary-classification benchmark. They do not establish that changing any individual feature would reduce churn, that the educational threshold is economically optimal, or that the model is ready for autonomous retention decisions.
+
+For exhaustive analysis, inspect the notebooks and the complete evidence set under [`docs/images/`](docs/images/).
