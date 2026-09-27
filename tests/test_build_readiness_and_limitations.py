@@ -17,7 +17,7 @@ from scripts.build_readiness_and_limitations import (
 def test_default_artifact_has_ten_limitations() -> None:
     artifact = build_readiness_and_limitations()
 
-    assert len(artifact["limitations"]) == 10
+    assert len(artifact["limitations"]) == 12
     assert artifact["dataset_slug"] == "telco-customer-churn"
     assert artifact["schema_version"] == "readiness-and-limitations.v1"
 
@@ -144,7 +144,7 @@ def test_custom_limitations_can_be_supplied() -> None:
 
 
 def test_default_limitations_constant_matches_readme_bullet_count() -> None:
-    assert len(TELCO_LIMITATIONS) == 10
+    assert len(TELCO_LIMITATIONS) == 12
 
 
 def test_artifact_is_json_serializable() -> None:

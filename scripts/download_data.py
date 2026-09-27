@@ -3,13 +3,20 @@
 Study-specific choices such as source identifiers and destination paths are
 intentionally passed by callers. The module supports Kaggle datasets and
 direct HTTP, HTTPS, or FTP file downloads.
+
+A study pins its source through a versioned JSON source contract (see
+``contracts/source.json``). :func:`acquire_kaggle_source` downloads the pinned
+Kaggle version and refuses to continue unless every expected file matches its
+recorded size and SHA-256 and no unexpected file is present.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import logging
+import re
 import os
 import shutil
 import sys
@@ -17,7 +24,7 @@ import warnings
 from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Final, Literal
+from typing import Any, Final, Literal, Mapping
 from urllib.error import HTTPError, URLError
 from urllib.parse import unquote, urlparse
 from urllib.request import Request, urlopen
@@ -30,12 +37,25 @@ SUPPORTED_URL_SCHEMES: Final[frozenset[str]] = frozenset(
 )
 DEFAULT_CHUNK_SIZE: Final[int] = 1024 * 1024
 DEFAULT_TIMEOUT_SECONDS: Final[int] = 120
+SOURCE_CONTRACT_SCHEMA_VERSION: Final[str] = "source-contract.v1"
+_KAGGLE_HANDLE_PATTERN: Final[re.Pattern[str]] = re.compile(
+    r"^[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*"
+    r"(?:/versions/[1-9][0-9]*)?$"
+)
 
 SourceKind = Literal["kaggle", "url"]
 
 
 class DatasetDownloadError(RuntimeError):
     """Raised when a dataset cannot be downloaded or validated."""
+
+
+class DatasetIntegrityError(DatasetDownloadError):
+    """Raised when acquired files do not match the pinned source contract."""
+
+
+class SourceContractError(ValueError):
+    """Raised when a source contract is malformed."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -243,10 +263,16 @@ def _verify_sha256(file_path: Path, expected_sha256: str | None) -> None:
     observed = calculate_sha256(file_path)
 
     if observed != expected:
-        raise DatasetDownloadError(
+        raise DatasetIntegrityError(
             f"SHA-256 mismatch for {file_path.name}: "
-            f"expected {expected}, observed {observed}."
+            f"expected {expected}, observed {observed}. "
+            "The acquired file is not the pinned source snapshot."
         )
+
+
+def verify_sha256(file_path: str | Path, expected_sha256: str) -> None:
+    """Fail with :class:`DatasetIntegrityError` unless the digest matches."""
+    _verify_sha256(Path(file_path), expected_sha256)
 
 
 def download_kaggle_dataset(
@@ -269,9 +295,10 @@ def download_kaggle_dataset(
     """
     normalized_handle = handle.strip()
 
-    if not normalized_handle or "/" not in normalized_handle:
+    if not _KAGGLE_HANDLE_PATTERN.fullmatch(normalized_handle):
         raise ValueError(
-            "Kaggle handle must use the 'owner/dataset' format."
+            "Kaggle handle must use the 'owner/dataset' or "
+            "'owner/dataset/versions/<n>' format."
         )
 
     output_dir = resolve_project_path(
@@ -475,6 +502,202 @@ def acquire_url_file(
     )
 
 
+@dataclass(frozen=True, slots=True)
+class SourceFileContract:
+    """Expected identity of one acquired source file."""
+
+    filename: str
+    sha256: str
+    size_bytes: int
+
+
+@dataclass(frozen=True, slots=True)
+class SourceContract:
+    """Immutable identity of a pinned Kaggle dataset version."""
+
+    dataset_slug: str
+    handle: str
+    version: int
+    versioned_handle: str
+    destination: str
+    files: tuple[SourceFileContract, ...]
+
+    def file(self, filename: str) -> SourceFileContract:
+        """Return the contract for one expected filename."""
+        for item in self.files:
+            if item.filename == filename:
+                return item
+        raise KeyError(f"File is not declared by the source contract: {filename}")
+
+
+def _require_sha256(value: Any, *, field: str) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+        raise SourceContractError(
+            f"{field} must be a lowercase 64-character SHA-256 digest."
+        )
+    return value
+
+
+def parse_source_contract(payload: Mapping[str, Any]) -> SourceContract:
+    """Validate a decoded source contract and return its typed form."""
+    if payload.get("schema_version") != SOURCE_CONTRACT_SCHEMA_VERSION:
+        raise SourceContractError(
+            f"Unsupported source contract schema: {payload.get('schema_version')!r}."
+        )
+    if payload.get("provider") != "kaggle":
+        raise SourceContractError("Only the 'kaggle' provider is supported.")
+
+    handle = payload.get("handle")
+    version = payload.get("version")
+    versioned_handle = payload.get("versioned_handle")
+    if not isinstance(handle, str) or not _KAGGLE_HANDLE_PATTERN.fullmatch(handle):
+        raise SourceContractError("handle must use the 'owner/dataset' format.")
+    if "/versions/" in handle:
+        raise SourceContractError("handle must not embed a version.")
+    if isinstance(version, bool) or not isinstance(version, int) or version < 1:
+        raise SourceContractError("version must be a positive integer.")
+    if versioned_handle != f"{handle}/versions/{version}":
+        raise SourceContractError(
+            "versioned_handle must equal '<handle>/versions/<version>'."
+        )
+
+    destination = payload.get("destination")
+    if not isinstance(destination, str) or not destination.strip():
+        raise SourceContractError("destination must be a project-relative path.")
+    if Path(destination).is_absolute():
+        raise SourceContractError("destination must be project-relative.")
+
+    raw_files = payload.get("files")
+    if not isinstance(raw_files, list) or not raw_files:
+        raise SourceContractError("files must be a non-empty list.")
+    files: list[SourceFileContract] = []
+    for index, item in enumerate(raw_files):
+        if not isinstance(item, Mapping):
+            raise SourceContractError(f"files[{index}] must be an object.")
+        filename = _validate_filename(str(item.get("filename", "")))
+        size_bytes = item.get("size_bytes")
+        if isinstance(size_bytes, bool) or not isinstance(size_bytes, int) or size_bytes <= 0:
+            raise SourceContractError(f"files[{index}].size_bytes must be positive.")
+        files.append(
+            SourceFileContract(
+                filename=filename,
+                sha256=_require_sha256(item.get("sha256"), field=f"files[{index}].sha256"),
+                size_bytes=size_bytes,
+            )
+        )
+    if len({item.filename for item in files}) != len(files):
+        raise SourceContractError("files must not repeat a filename.")
+
+    return SourceContract(
+        dataset_slug=str(payload.get("dataset_slug", "")),
+        handle=handle,
+        version=version,
+        versioned_handle=versioned_handle,
+        destination=destination,
+        files=tuple(files),
+    )
+
+
+def load_source_contract(path: str | Path) -> SourceContract:
+    """Load and validate a JSON source contract."""
+    with Path(path).open("r", encoding="utf-8") as source:
+        return parse_source_contract(json.load(source))
+
+
+def verify_acquired_files(
+    directory: str | Path,
+    contract: SourceContract,
+    *,
+    allow_unexpected_files: bool = False,
+) -> tuple[Path, ...]:
+    """Verify that a directory holds exactly the pinned source files.
+
+    Every declared file must exist once, with the declared byte size and
+    SHA-256. Visible files that the contract does not declare are rejected
+    unless ``allow_unexpected_files`` is true. Hidden acquisition markers
+    (such as kagglehub's ``.complete`` directory) are ignored.
+    """
+    root = Path(directory).expanduser().resolve()
+    files = discover_dataset_files(root)
+    by_name: dict[str, list[Path]] = {}
+    for path in files:
+        by_name.setdefault(path.name, []).append(path)
+
+    declared = {item.filename for item in contract.files}
+    unexpected = sorted(
+        path.relative_to(root).as_posix()
+        for path in files
+        if path.name not in declared
+    )
+    if unexpected and not allow_unexpected_files:
+        raise DatasetIntegrityError(
+            f"Unexpected files in {root.name}: {unexpected}. The acquisition "
+            "does not match the pinned source contract."
+        )
+
+    verified: list[Path] = []
+    for item in contract.files:
+        matches = by_name.get(item.filename, [])
+        if not matches:
+            raise DatasetIntegrityError(
+                f"Expected source file is missing: {item.filename}."
+            )
+        if len(matches) != 1:
+            raise DatasetIntegrityError(
+                f"Expected exactly one {item.filename}, found {len(matches)}."
+            )
+        path = matches[0]
+        observed_size = path.stat().st_size
+        if observed_size != item.size_bytes:
+            raise DatasetIntegrityError(
+                f"Size mismatch for {item.filename}: expected "
+                f"{item.size_bytes} bytes, observed {observed_size}."
+            )
+        _verify_sha256(path, item.sha256)
+        verified.append(path)
+    return tuple(verified)
+
+
+def acquire_kaggle_source(
+    contract: SourceContract,
+    *,
+    force: bool = False,
+    show_progress: bool = False,
+    project_root: str | Path = PROJECT_ROOT,
+) -> DatasetAcquisition:
+    """Acquire the pinned Kaggle version and verify it before returning.
+
+    A local copy that already satisfies the contract is reused without network
+    access. A local copy that exists but does not match is never silently
+    replaced; the caller must pass ``force=True`` to download again.
+    """
+    root = Path(project_root).expanduser().resolve()
+    output_dir = resolve_project_path(contract.destination, project_root=root)
+
+    has_local_files = output_dir.is_dir() and bool(discover_dataset_files(output_dir))
+    if has_local_files and not force:
+        verify_acquired_files(output_dir, contract)
+        resolved_path = output_dir
+    else:
+        resolved_path = download_kaggle_dataset(
+            handle=contract.versioned_handle,
+            destination=output_dir,
+            force=force,
+            show_progress=show_progress,
+            project_root=root,
+        )
+        verify_acquired_files(output_dir, contract)
+
+    return DatasetAcquisition(
+        source_kind="kaggle",
+        source_reference=contract.versioned_handle,
+        destination=output_dir,
+        resolved_path=resolved_path,
+        files=discover_dataset_files(output_dir),
+        project_root=root,
+    )
+
+
 def _print_acquisition(acquisition: DatasetAcquisition) -> None:
     """Render a compact deterministic acquisition summary."""
     print(f"Source type: {acquisition.source_kind}")
@@ -491,6 +714,35 @@ def _build_parser() -> argparse.ArgumentParser:
         description="Acquire source datasets into a study repository.",
     )
     subparsers = parser.add_subparsers(dest="source", required=True)
+
+    source_parser = subparsers.add_parser(
+        "source",
+        help=(
+            "Acquire the pinned Kaggle version declared by a source contract "
+            "and verify every file's size and SHA-256."
+        ),
+    )
+    source_parser.add_argument(
+        "contract",
+        nargs="?",
+        default="contracts/source.json",
+        help="Project-relative source contract (default: contracts/source.json).",
+    )
+    source_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Download again instead of verifying the existing local copy.",
+    )
+    source_parser.add_argument(
+        "--project-root",
+        default=str(PROJECT_ROOT),
+        help="Project root directory (default: repository root).",
+    )
+    source_parser.add_argument(
+        "--show-progress",
+        action="store_true",
+        help="Show kagglehub progress and diagnostic output.",
+    )
 
     kaggle_parser = subparsers.add_parser(
         "kaggle",
@@ -568,7 +820,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.source == "kaggle":
+        if args.source == "source":
+            contract = load_source_contract(
+                resolve_project_path(args.contract, project_root=args.project_root)
+            )
+            acquisition = acquire_kaggle_source(
+                contract,
+                force=args.force,
+                show_progress=args.show_progress,
+                project_root=args.project_root,
+            )
+        elif args.source == "kaggle":
             acquisition = acquire_kaggle_dataset(
                 handle=args.handle,
                 destination=args.destination,
@@ -590,6 +852,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     _print_acquisition(acquisition)
+    if args.source == "source":
+        print("Integrity: verified against the source contract (size and SHA-256).")
     return 0
 
 

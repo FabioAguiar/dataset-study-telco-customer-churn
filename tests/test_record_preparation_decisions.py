@@ -556,3 +556,71 @@ def test_results_are_deterministic() -> None:
     )
     pd.testing.assert_frame_equal(first.guardrails_frame(), second.guardrails_frame())
     pd.testing.assert_frame_equal(first.split_policy_frame(), second.split_policy_frame())
+
+
+def _with_decision(decision_id: str, **changes: object) -> list[dict[str, object]]:
+    decisions = _decisions()
+    for decision in decisions:
+        if decision["decision_id"] == decision_id:
+            decision.update(changes)
+    return decisions
+
+
+def _leakage_blocker() -> dict[str, object]:
+    return {
+        "decision_id": "PREP-006",
+        "domain": "Leakage governance",
+        "title": "Resolve inference-time availability",
+        "affected_fields": ("tenure",),
+        "status": "Blocked",
+        "phase": "External contract",
+        "fit_scope": "External",
+        "operation": "Confirm scoring-time availability.",
+        "rationale": "Availability is unconfirmed.",
+        "prerequisites": (),
+        "acceptance_criteria": "Availability is explicit.",
+        "source_stages": ("15",),
+    }
+
+
+def _evidence_for(decisions: list[dict[str, object]]) -> list[dict[str, object]]:
+    evidence = _evidence()
+    known = {item["decision_id"] for item in evidence}
+    for decision in decisions:
+        if decision["decision_id"] not in known:
+            evidence.append(
+                {
+                    **evidence[0],
+                    "evidence_id": f"PDE-{len(evidence) + 1:03d}",
+                    "decision_id": decision["decision_id"],
+                }
+            )
+    return evidence
+
+
+def test_educational_snapshot_split_requires_an_explicit_snapshot_decision() -> None:
+    unresolved = _report(
+        decisions=_with_decision("PREP-003", status="Approved", phase="Split", fit_scope="None")
+    )
+    assert not unresolved.is_ready_for_educational_snapshot_split
+
+    blocked_split_decision = _report(
+        split_policy=_split_policy(temporal_policy_status="Resolved snapshot fallback")
+    )
+    assert not blocked_split_decision.is_ready_for_educational_snapshot_split
+
+
+def test_educational_snapshot_split_does_not_imply_operational_readiness() -> None:
+    decisions = _with_decision(
+        "PREP-003", status="Approved", phase="Split", fit_scope="None"
+    ) + [_leakage_blocker()]
+    report = _report(
+        decisions=decisions,
+        evidence=_evidence_for(decisions),
+        split_policy=_split_policy(temporal_policy_status="Resolved snapshot fallback"),
+    )
+
+    assert report.is_structurally_valid
+    assert report.is_ready_for_educational_snapshot_split
+    assert not report.is_ready_for_split_execution
+    assert not report.is_ready_for_modeling

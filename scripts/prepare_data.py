@@ -1345,6 +1345,7 @@ def build_split_manifest(
     validation: PartitionValidationReport,
     partition_paths: Mapping[str, str | Path],
     partition_sha256: Mapping[str, str],
+    holdout_reference: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a versioned split manifest with explicit membership."""
     paths = {name: _relative_posix(path) for name, path in partition_paths.items()}
@@ -1373,7 +1374,112 @@ def build_split_manifest(
         ),
         "operational_modeling_ready": False,
         "educational_model_selection_ready": True,
+        **(
+            {"holdout_establishment": _copy_mapping(holdout_reference)}
+            if holdout_reference is not None
+            else {}
+        ),
     }
+
+
+HOLDOUT_MEMBERSHIP_SCHEMA_VERSION: Final[str] = "holdout-membership.v1"
+
+
+def _partition_identifier_values(
+    frame: pd.DataFrame, identifier_columns: Sequence[str]
+) -> list[str]:
+    keys = _stable_membership_key(frame, identifier_columns)
+    return sorted(str(value) for value in keys.tolist())
+
+
+def _identifier_digest(values: Sequence[str]) -> str:
+    payload = "\n".join(values).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def build_holdout_membership(
+    *,
+    dataset_slug: str,
+    policy: ClassificationSplitPolicy,
+    partitions: DatasetPartitions,
+    identifier_columns: Sequence[str],
+    target_column: str,
+    source_sha256: str,
+    established_by: str,
+    exploration_partition: str,
+    established_before: Sequence[str],
+) -> dict[str, Any]:
+    """Record partition membership fixed before any target-aware analysis.
+
+    The artifact stores sorted identifier lists and their SHA-256 digests so a
+    later stage can prove that it materializes exactly the holdout that was
+    established upstream instead of drawing a new split.
+    """
+    if exploration_partition not in {"train", "validation", "test"}:
+        raise ValueError("exploration_partition must name a partition.")
+    if exploration_partition == "test":
+        raise ValueError("The test partition cannot be the exploration partition.")
+    partition_records: dict[str, Any] = {}
+    for name, frame in partitions.as_mapping().items():
+        identifiers = _partition_identifier_values(frame, identifier_columns)
+        counts = frame[target_column].value_counts().sort_index()
+        partition_records[name] = {
+            "row_count": int(len(frame)),
+            "class_counts": {str(key): int(value) for key, value in counts.items()},
+            "identifiers_sha256": _identifier_digest(identifiers),
+            "identifiers": identifiers,
+        }
+    return {
+        "schema_version": HOLDOUT_MEMBERSHIP_SCHEMA_VERSION,
+        "artifact_type": "holdout_membership",
+        "dataset_slug": dataset_slug,
+        "source_sha256": source_sha256,
+        "identifier_columns": list(identifier_columns),
+        "split_policy": policy.as_dict(),
+        "established_by": established_by,
+        "established_before": list(established_before),
+        "exploration_partition": exploration_partition,
+        "partitions": partition_records,
+    }
+
+
+def verify_partitions_match_holdout(
+    partitions: DatasetPartitions,
+    holdout: Mapping[str, Any],
+    *,
+    identifier_columns: Sequence[str],
+    policy: ClassificationSplitPolicy | None = None,
+    source_sha256: str | None = None,
+) -> dict[str, str]:
+    """Fail unless partitions reproduce the previously established holdout."""
+    if holdout.get("schema_version") != HOLDOUT_MEMBERSHIP_SCHEMA_VERSION:
+        raise PartitionValidationError("Unsupported holdout-membership schema.")
+    if list(holdout.get("identifier_columns", [])) != list(identifier_columns):
+        raise PartitionValidationError("Holdout identifier columns differ.")
+    if policy is not None and _semantic_normalize(
+        holdout.get("split_policy")
+    ) != _semantic_normalize(policy.as_dict()):
+        raise PartitionValidationError(
+            "The split policy differs from the policy that established the holdout."
+        )
+    if source_sha256 is not None and holdout.get("source_sha256") != source_sha256:
+        raise PartitionValidationError(
+            "The source file differs from the file used to establish the holdout."
+        )
+    recorded = holdout.get("partitions", {})
+    digests: dict[str, str] = {}
+    for name, frame in partitions.as_mapping().items():
+        identifiers = _partition_identifier_values(frame, identifier_columns)
+        digest = _identifier_digest(identifiers)
+        expected = recorded.get(name, {})
+        if digest != expected.get("identifiers_sha256") or identifiers != list(
+            expected.get("identifiers", [])
+        ):
+            raise PartitionValidationError(
+                f"Partition '{name}' does not reproduce the established holdout membership."
+            )
+        digests[name] = digest
+    return digests
 
 
 def build_quality_evidence(

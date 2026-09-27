@@ -2,18 +2,31 @@
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+# Two dependency layers are kept deliberately separate:
+#
+# * The ranges below are the minimum versions the reusable modules are written
+#   against. They are NOT the environment that produced the study results.
+# * requirements/lock.txt (with the interpreter in .python-version) pins the
+#   exact environment used to execute the notebooks and serialize the model.
+#   The model bundle enforces those exact versions before deserialization.
+#
+# No license is declared: the repository does not currently grant one
+# (see README, "License").
+
 [project]
 name = "dataset-study-telco-customer-churn"
 version = "0.1.0"
 description = "Reproducible Telco Customer Churn dataset study"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { file = "LICENSE" }
 dependencies = [
-    "kagglehub>=0.3",
-    "pandas>=2.0",
-    "scikit-learn>=1.2",
     "joblib>=1.3",
+    "kagglehub>=0.3",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    # l1_ratio replaces the LogisticRegression penalty parameter from 1.8 on;
+    # older releases would silently ignore l1_ratio=1.0 and fit an L2 model.
+    "scikit-learn>=1.8",
 ]
 
 [project.optional-dependencies]
@@ -21,8 +34,11 @@ notebook = [
     "ipykernel>=6.0",
     "jupyterlab>=4.0",
     "matplotlib>=3.8",
+    "nbconvert>=7.0",
+    "nbformat>=5.9",
 ]
 test = [
+    "nbformat>=5.9",
     "pytest>=8.0",
 ]
 

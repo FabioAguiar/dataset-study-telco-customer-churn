@@ -3,8 +3,7 @@
 This module never renders or regenerates a chart. It only enumerates
 already-existing PNG assets, classifies each one by filename pattern into a
 logical role and chart kind, hashes its bytes, and writes a machine-readable
-index. ``scripts/export_figures.py`` is an unrelated, empty (0-byte) file and
-is never invoked by this module.
+index. Every indexed figure is saved by a Notebook 01 cell.
 """
 
 from __future__ import annotations
@@ -25,6 +24,14 @@ DEFAULT_IMAGES_DIR: Final[str] = "docs/images"
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 
 _NOTEBOOK: Final[str] = "notebooks/01_data_understanding_and_exploration.ipynb"
+DATA_SCOPE: Final[str] = (
+    "Every figure is produced by Notebook 01 after Section 8A. Data-derived "
+    "figures describe only the train partition fixed there (holdout "
+    "membership: artifacts/preparation/telco-customer-churn/"
+    "holdout-membership.json); validation and test rows are never plotted. "
+    "Contract summary figures (quality findings, leakage audit, insights, "
+    "preparation decisions) describe notebook contracts, not data rows."
+)
 
 
 class VisualEvidenceIndexError(ValueError):
@@ -316,8 +323,7 @@ def build_visual_evidence_index(
                     "producer_notebook": _NOTEBOOK,
                     "generation_mechanism": (
                         "matplotlib figure saved directly by a notebook "
-                        "cell; scripts/export_figures.py is an empty, "
-                        "unused 0-byte file and is not the producer."
+                        "cell."
                     ),
                 },
             }
@@ -329,6 +335,7 @@ def build_visual_evidence_index(
         "contract_version": contract_version,
         "dataset_slug": dataset_slug,
         "source_directory": _relative_posix(root, directory),
+        "data_scope": DATA_SCOPE,
         "total_assets_scanned": len(png_paths),
         "total_assets_indexed": len(visuals),
         "excluded_assets": excluded,

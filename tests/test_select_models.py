@@ -108,7 +108,7 @@ def _specs():
             ),
             "scale_numerical": True,
             "search_strategy": "GridSearchCV",
-            "search_space": {"model__C": [0.1, 1.0], "model__penalty": ["l2"]},
+            "search_space": {"model__C": [0.1, 1.0], "model__l1_ratio": [0.0]},
             "candidate_count": 2,
         },
         {
@@ -660,6 +660,184 @@ def test_tie_falls_back_to_simplicity_and_stable_id():
         simplicity_order=["LogisticRegression", "DecisionTreeClassifier"],
     )
     assert result["selected_model_id"] == "a"
+
+
+def _multiway_inputs():
+    """Four eligible candidates: a, b, c tie with leader a; d does not."""
+
+    def cv(model_id, family, std, lower, upper):
+        return {
+            "model_id": model_id,
+            "family": family,
+            "cv_average_precision_std": std,
+            "cv_average_precision_confidence_lower": lower,
+            "cv_average_precision_confidence_upper": upper,
+        }
+
+    def metrics(ap, brier, log_loss=0.5, roc_auc=0.8):
+        return {
+            "metrics": {
+                "average_precision": ap,
+                "roc_auc": roc_auc,
+                "brier_score": brier,
+                "log_loss": log_loss,
+            }
+        }
+
+    cv_summaries = {
+        "a": cv("a", "HistGradientBoostingClassifier", 0.016, 0.659, 0.687),
+        "b": cv("b", "LogisticRegression", 0.013, 0.648, 0.670),
+        "c": cv("c", "RandomForestClassifier", 0.012, 0.655, 0.677),
+        "d": cv("d", "DecisionTreeClassifier", 0.023, 0.599, 0.640),
+    }
+    validation = {
+        "a": metrics(0.6708, 0.1332),
+        "b": metrics(0.6688, 0.1339),
+        "c": metrics(0.6679, 0.1320),
+        "d": metrics(0.6134, 0.1462),
+    }
+    return cv_summaries, validation
+
+
+def _select(cv_summaries, validation):
+    return sm.select_candidate_model(
+        cv_summaries=cv_summaries,
+        validation_evaluations=validation,
+        dummy_validation_metrics={"average_precision": 0.265},
+        dummy_average_precision_margin=0.01,
+        practical_tie_tolerance=0.01,
+        simplicity_order=[
+            "LogisticRegression",
+            "DecisionTreeClassifier",
+            "RandomForestClassifier",
+            "HistGradientBoostingClassifier",
+        ],
+    )
+
+
+def test_practical_tie_group_includes_every_candidate_tied_with_the_leader():
+    result = _select(*_multiway_inputs())
+
+    assert result["practical_tie"] is True
+    assert result["practical_tie_group"] == ["a", "b", "c"]
+    assert result["finalists"] == ["a", "b", "c"]
+    assert "d" not in result["practical_tie_group"]
+
+
+def test_secondary_criterion_is_applied_across_the_whole_tie_group():
+    # c is third on validation AP; a top-2-only rule would never consider it,
+    # but it has the lowest Brier score in the three-way tie group.
+    result = _select(*_multiway_inputs())
+
+    assert result["selected_model_id"] == "c"
+    first = result["criteria_applied"][0]
+    assert first["criterion"] == "lower_validation_brier_score"
+    assert set(first["values"]) == {"a", "b", "c"}
+    assert first["survivors"] == ["c"]
+    assert first["winner"] == "c"
+    assert len(result["criteria_applied"]) == 1
+
+
+def test_candidate_within_ap_tolerance_but_without_cv_overlap_is_excluded():
+    cv_summaries, validation = _multiway_inputs()
+    cv_summaries["c"]["cv_average_precision_confidence_lower"] = 0.60
+    cv_summaries["c"]["cv_average_precision_confidence_upper"] = 0.65
+
+    result = _select(cv_summaries, validation)
+
+    assert result["practical_tie_group"] == ["a", "b"]
+    assert result["selected_model_id"] == "a"
+
+
+def test_candidate_outside_ap_tolerance_is_excluded_from_the_tie_group():
+    cv_summaries, validation = _multiway_inputs()
+    validation["c"]["metrics"]["average_precision"] = 0.6600
+
+    result = _select(cv_summaries, validation)
+
+    assert result["practical_tie_group"] == ["a", "b"]
+    assert result["selected_model_id"] == "a"
+
+
+def test_no_tie_keeps_the_leader_as_the_only_finalist():
+    cv_summaries, validation = _multiway_inputs()
+    for model_id in ("b", "c"):
+        validation[model_id]["metrics"]["average_precision"] = 0.64
+
+    result = _select(cv_summaries, validation)
+
+    assert result["practical_tie"] is False
+    assert result["practical_tie_group"] == ["a"]
+    assert result["finalists"] == ["a"]
+    assert result["criteria_applied"] == []
+    assert result["selected_model_id"] == "a"
+
+
+def test_multiway_criteria_narrow_progressively_until_one_survivor():
+    cv_summaries, validation = _multiway_inputs()
+    for model_id in ("a", "b", "c"):
+        validation[model_id]["metrics"]["brier_score"] = 0.133
+    validation["a"]["metrics"]["log_loss"] = 0.40
+    validation["b"]["metrics"]["log_loss"] = 0.40
+    validation["c"]["metrics"]["log_loss"] = 0.45
+    cv_summaries["a"]["cv_average_precision_std"] = 0.02
+    cv_summaries["b"]["cv_average_precision_std"] = 0.01
+
+    result = _select(cv_summaries, validation)
+
+    applied = [row["criterion"] for row in result["criteria_applied"]]
+    assert applied == [
+        "lower_validation_brier_score",
+        "lower_validation_log_loss",
+        "lower_cv_average_precision_std",
+    ]
+    assert result["criteria_applied"][0]["survivors"] == ["a", "b", "c"]
+    assert result["criteria_applied"][1]["survivors"] == ["a", "b"]
+    assert result["selected_model_id"] == "b"
+
+
+# Deferred-operation closure
+
+def test_every_deferred_operation_requires_a_final_disposition():
+    with pytest.raises(sm.ModelSelectionContractError, match="without a final"):
+        sm.resolve_deferred_operations(
+            deferred_operations=["SMOTE", "class weights"],
+            dispositions={"SMOTE": {"disposition": "rejected", "rationale": "x"}},
+        )
+
+
+def test_deferred_operation_dispositions_are_validated():
+    with pytest.raises(sm.ModelSelectionContractError, match="Invalid disposition"):
+        sm.resolve_deferred_operations(
+            deferred_operations=["SMOTE"],
+            dispositions={"SMOTE": {"disposition": "later", "rationale": "x"}},
+        )
+    with pytest.raises(sm.ModelSelectionContractError, match="rationale"):
+        sm.resolve_deferred_operations(
+            deferred_operations=["SMOTE"],
+            dispositions={"SMOTE": {"disposition": "rejected", "rationale": " "}},
+        )
+    with pytest.raises(sm.ModelSelectionContractError, match="undeclared"):
+        sm.resolve_deferred_operations(
+            deferred_operations=["SMOTE"],
+            dispositions={
+                "SMOTE": {"disposition": "rejected", "rationale": "x"},
+                "bagging": {"disposition": "performed", "rationale": "x"},
+            },
+        )
+
+
+def test_resolved_deferred_operations_preserve_declared_order():
+    records = sm.resolve_deferred_operations(
+        deferred_operations=["class weights", "SMOTE"],
+        dispositions={
+            "SMOTE": {"disposition": "rejected", "rationale": "r", "source_decisions": ["PREP-020"]},
+            "class weights": {"disposition": "performed", "rationale": "p", "evidence": {"n": 1}},
+        },
+    )
+    assert [row["operation"] for row in records] == ["class weights", "SMOTE"]
+    assert records[0]["evidence"] == {"n": 1}
+    assert records[1]["source_decisions"] == ["PREP-020"]
 
 
 def test_cv_confidence_interval_and_overlap_rule():

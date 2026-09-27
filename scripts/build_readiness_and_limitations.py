@@ -24,7 +24,7 @@ DEFAULT_OUTPUT: Final[str] = (
     "artifacts/readiness/telco-customer-churn/readiness-and-limitations.json"
 )
 
-# Transcribed verbatim from README.md's "## Limitations" section (10 bullets).
+# Transcribed from README.md's "Limitations and readiness" section (12 items).
 TELCO_LIMITATIONS: Final[tuple[dict[str, Any], ...]] = (
     {
         "limitation_id": "LIM-001",
@@ -107,6 +107,27 @@ TELCO_LIMITATIONS: Final[tuple[dict[str, Any], ...]] = (
         "category": "governance",
         "blocking": True,
     },
+    {
+        "limitation_id": "LIM-011",
+        "statement": (
+            "A superseded version of this study ran target-aware EDA on the "
+            "full dataset, including the rows that form the test partition; "
+            "the current workflow fixes the holdout before any target-aware "
+            "analysis, but that earlier exposure cannot be undone."
+        ),
+        "category": "evaluation",
+        "blocking": False,
+    },
+    {
+        "limitation_id": "LIM-012",
+        "statement": (
+            "Deferred operations marked out_of_scope (TotalCharges log1p, "
+            "scaler comparison, tenure/TotalCharges ablation, engineered "
+            "interactions) were not evaluated."
+        ),
+        "category": "scope",
+        "blocking": False,
+    },
 )
 
 TELCO_KNOWN_UNSUPPORTED_USES: Final[tuple[str, ...]] = (
@@ -164,7 +185,7 @@ def _default_readiness_pointers() -> dict[str, Any]:
             ),
         },
         "final_test_status": {
-            "status": "completed_single_sealed_evaluation",
+            "status": "completed_single_evaluation_on_isolated_holdout",
             "evidence_ref": {
                 "artifact_path": (
                     "artifacts/models/telco-customer-churn/"
@@ -173,8 +194,10 @@ def _default_readiness_pointers() -> dict[str, Any]:
                 "field": "test_probability_evaluation_count",
             },
             "note": (
-                "All five test_used_for_* flags are false; the sealed test "
-                "partition was evaluated exactly once, after the final fit."
+                "All five test_used_for_* flags are false; the holdout "
+                "membership was fixed before any target-aware analysis "
+                "(holdout-membership.json) and the test partition was "
+                "evaluated exactly once, after the final fit. See LIM-011."
             ),
         },
         "inference_demo_status": {

@@ -54,11 +54,18 @@ _INVENTORY: Final[tuple[dict[str, Any], ...]] = (
         "depends_on": (),
     },
     {
+        "logical_role": "holdout_establishment",
+        "relative_path": (
+            "artifacts/preparation/telco-customer-churn/holdout-membership.json"
+        ),
+        "depends_on": ("source_identity_and_preparation",),
+    },
+    {
         "logical_role": "split_identity",
         "relative_path": (
             "artifacts/preparation/telco-customer-churn/split-manifest.json"
         ),
-        "depends_on": ("source_identity_and_preparation",),
+        "depends_on": ("source_identity_and_preparation", "holdout_establishment"),
     },
     {
         "logical_role": "data_quality_mechanical",

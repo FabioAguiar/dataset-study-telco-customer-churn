@@ -4,6 +4,7 @@
   "contract_version": "visual-evidence-index.v1",
   "dataset_slug": "telco-customer-churn",
   "source_directory": "docs/images",
+  "data_scope": "Every figure is produced by Notebook 01 after Section 8A. Data-derived figures describe only the train partition fixed there (holdout membership: artifacts/preparation/telco-customer-churn/holdout-membership.json); validation and test rows are never plotted. Contract summary figures (quality findings, leakage audit, insights, preparation decisions) describe notebook contracts, not data rows.",
   "total_assets_scanned": 76,
   "total_assets_indexed": 76,
   "excluded_assets": [],
@@ -17,12 +18,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-10-Target-Distribution",
       "method": "matplotlib bar chart of the target class counts, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/churn_target_class_distribution.png",
-      "sha256": "af7564fe907298dd50c49529fe1d5a91ce9013b432c9eee230f1e8f5ac71ed18",
+      "sha256": "747f00e5c7602f778c4956ee801c04d5853ae97794a50f7339300cdda5b122f5",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -34,12 +35,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/contract_category_distribution.png",
-      "sha256": "71ad6ffd34c3fdfef4a6c6057a2b858f1eddfe2299e21288f0709fa850ebeed1",
+      "sha256": "284663e0809c99b084bca89f24066788eafefe36a80c2867f52cd9a062adfb9b",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -51,12 +52,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/contract_churn_rate_by_category.png",
-      "sha256": "762f3d070a1cb55c3d5b397d58ef6c6735b31cfa4d82c83d113f873467212ae7",
+      "sha256": "8c0cd1d5242e3f51182cf7c724c69e0bfda8acf24a63aed4fd783a77c779ac8a",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -68,12 +69,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib boxplot of a numerical feature grouped by a categorical feature, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/contract_vs_tenure_boxplot.png",
-      "sha256": "5c2ddfd46187a9da6a59470ff23d6253c548e196269d21f8da35d71f1d292103",
+      "sha256": "4fa2f897c60f6fd7c4bf556c88f5abdb1bf908b3866282b44610b0d94b845ac1",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -85,12 +86,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib boxplot of a numerical feature grouped by a categorical feature, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/contract_vs_total_charges_boxplot.png",
-      "sha256": "676687bf09b20d876636363009380da680268c598a4a7216dc5dacf3db3ed3ba",
+      "sha256": "a347670a846c241ee7f0e9b9118d05751e1cc4186ae44b8a454ded12bbe17bf6",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -102,12 +103,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/dependents_category_distribution.png",
-      "sha256": "7d4c3ede215cd6cecd081d861f77fc74fa1f7c9857bb0c2a6da86ab5e440ef5f",
+      "sha256": "96bfd16a82d0f675660695a29e72248054237fdee7f17921e71fa7bbd1fa7d27",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -119,12 +120,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/dependents_churn_rate_by_category.png",
-      "sha256": "63918c92d3ef5a5c7a87b8b7eeaa68012ef6e950b6b1ef80d66566449e8dafa5",
+      "sha256": "5e867773f00eaa6acfdbd79c9b345eedd7b7ecb051f768677fd6de6827651a06",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -136,12 +137,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/device_protection_category_distribution.png",
-      "sha256": "2e241f3266f937356ec3add5d071bef865bc906b2e4738c9569f212239fac183",
+      "sha256": "532f7f20a867eeb85242d218d71fc5b96e520610f228ad318c227ed7c58cc3cb",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -153,12 +154,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/device_protection_churn_rate_by_category.png",
-      "sha256": "67940d28c0fb8fdb3ab7b2da217ba7a01dbaf8443cd9ed8bfeb94aeaefab9d46",
+      "sha256": "0accf0553f3f224967208cdb429e4cc336ba64d7434cffb2c22a914e36238599",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -170,12 +171,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise association matrix (Cramer's V, eta-squared, or Pearson correlation), generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/feature_relationships_categorical_cramers_v_heatmap.png",
-      "sha256": "b45c28668afe48a85f357e8d7240c51519912fb67b5df58c438712aa8ed9e715",
+      "sha256": "7facfdb299e0368fd3175d71a657899419ea2e4ac6e23c12d0af2cc0793fcfb9",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -187,12 +188,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise association matrix (Cramer's V, eta-squared, or Pearson correlation), generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/feature_relationships_categorical_numerical_eta_squared_heatmap.png",
-      "sha256": "6dffc86ddb3610a605730d9eebf604acaafe883ded70ad3660f159984ae73d77",
+      "sha256": "8e839e346d40504591f6fd5f8887d44666e02c6e8c8c62c21028af0f72a42c3a",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -204,12 +205,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise association matrix (Cramer's V, eta-squared, or Pearson correlation), generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/feature_relationships_numerical_correlation_heatmap.png",
-      "sha256": "889a392c41a178ed82aaa653babcf4f287f1a53354137e0841b39b6db7587d88",
+      "sha256": "5fe1c132dc37986c94e8b6fe2c1a586803629de23cb0b0790dee9de42fdc24a4",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -221,12 +222,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib ranked bar chart of feature-to-target association or effect-size metrics, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/feature_to_target_categorical_association_ranking.png",
-      "sha256": "00124cf4888156879dd69e3eed0f1199c4a11154de3d149ed66475e87aaf3752",
+      "sha256": "75a8b5336d822ae3eabb2fa353791136461cd1f66a037e30e182515dd0033e79",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -238,12 +239,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib ranked bar chart of feature-to-target association or effect-size metrics, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/feature_to_target_numerical_effect_size_ranking.png",
-      "sha256": "51639c0f454b5e655262cdafaca28c9602615db9ef5422b35825b1ddcefb18b4",
+      "sha256": "9dc6be3e5b8bd6f6e125da8371a52721c07a02576cc4df00686f3d4c98f9558d",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -255,12 +256,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/gender_category_distribution.png",
-      "sha256": "7192f0d70111045ad1db0515bba21db635dddc143b6b6a640431cdc46e4a39f7",
+      "sha256": "8a0ec25c85381d817c656c99ec02be43ee59cfcd7009cfd72ad6adcc315c9248",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -272,12 +273,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/gender_churn_rate_by_category.png",
-      "sha256": "8984ce1346c2285bca72d3df625f270eb3bf11f44fec29efc619c27e7f8a21d9",
+      "sha256": "977d8b85fadc7865a5eccbe272f4708669cc4e0fca0a734c71c3ecdfc55d8f51",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -289,12 +290,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-16-Initial-Data-Quality-Findings",
       "method": "matplotlib summary chart consolidating scripts/consolidate_quality_findings.py findings, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/initial_data_quality_findings_disposition_summary.png",
-      "sha256": "8580eed298cc21e936e8fdd6270ff64de8cc74ca4387c35aa963ae0ca5c202ef",
+      "sha256": "33985c939ea3ba6e10d9a54fdcb9e851c3bf6c1546d505c2c58c429628b0514e",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -306,12 +307,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-16-Initial-Data-Quality-Findings",
       "method": "matplotlib summary chart consolidating scripts/consolidate_quality_findings.py findings, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/initial_data_quality_findings_priority_matrix.png",
-      "sha256": "51020c6cb18a819fc47f116eaa7d34a51898a6c783e098fa35457c7f0a53f0ad",
+      "sha256": "1cbc95993885e0c57a9c486c248e9b6e0d53bf81ab2d7c3d9be5acaf1cd258f2",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -323,12 +324,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-16-Initial-Data-Quality-Findings",
       "method": "matplotlib summary chart consolidating scripts/consolidate_quality_findings.py findings, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/initial_data_quality_preparation_action_summary.png",
-      "sha256": "3159b8cccbf414e7d1ec74018c2b8a30f921d73102440590cb06028771a5a9c5",
+      "sha256": "8c4336491cb079c06b656ac11d7447f7a1003ab8a783a1f5525ac19457137352",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -340,12 +341,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_category_distribution.png",
-      "sha256": "1c3ef36a8cd2fb0be1044ab5f5dfd840d9627bd33ae803e398a3207c9e6cfd1a",
+      "sha256": "09398476507ed119cc617c23b7edfb8c55103d1143c84fdf4c3540f5f2b2c6a8",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -357,12 +358,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_churn_rate_by_category.png",
-      "sha256": "5a8d4eac6fada6deaa4a0e159745c6383a8d531202018447e25e503656325564",
+      "sha256": "c1f94d11464c0322e9a5b2c4036e25e5c77fe5f36146f7a5aeaf6d23b7972c57",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -374,12 +375,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_device_protection_contingency_heatmap.png",
-      "sha256": "9f1cd6bbd07b37b8aa64a0b85b0e7ba845154b17e06c232cc8e8625271483208",
+      "sha256": "8792815159234c9c3de08402f9ab15af21ef7bdc6c8fa9664086b0bbe5d218db",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -391,12 +392,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib boxplot of a numerical feature grouped by a categorical feature, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_monthly_charges_boxplot.png",
-      "sha256": "8fd3a97dc7a872d5b018f61a0c0aa69b17c742a0d9dbb156ee92229d7cc71876",
+      "sha256": "acd22f565638ea007316f72bc13b36a7cfe438e1673880638c67cf3b495e5cb7",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -408,12 +409,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_online_backup_contingency_heatmap.png",
-      "sha256": "d96b233e4c8cb76c77b751df65d45f372a73fec600bea033e1daa04bea7293cd",
+      "sha256": "b1453018043da1302dc7395ffc32b9a7e34a7550850771e23acf8c32d5134ce2",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -425,12 +426,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_online_security_contingency_heatmap.png",
-      "sha256": "773551725c6640ff601dba980398e2e67db5a19e1feddec37186aed71e29cc30",
+      "sha256": "bd90dbd42d2568df2c2289740dc1b6fe1286205f13c45d8f4495f977e3cc375e",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -442,12 +443,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_streaming_movies_contingency_heatmap.png",
-      "sha256": "27ef987e085060adff5721b797f8087f03091cd31f6b42c130fb3a13ba9c0105",
+      "sha256": "229293ade7553b2ceabaf84e76973aac57c090416e376f4f215754b48da24524",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -459,12 +460,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_streaming_tv_contingency_heatmap.png",
-      "sha256": "238c90c2ed436ec9c457c0b632fc7c0f24dfc1d4ceca1057dced772b70d3777b",
+      "sha256": "d78f8a5c2bcf4adef56c9cd774d351d90e72f46f4a6f35509ef10b8e83fc87da",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -476,12 +477,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/internet_service_vs_tech_support_contingency_heatmap.png",
-      "sha256": "035ee955e9501816e7954ebf26a499625cd9f2cd29b4ddb3b06a7a79ce08f0c6",
+      "sha256": "60a4b739383e61800c125a20129f469ab2a907f422773ff66291e05221b20255",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -493,12 +494,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-17-Key-Exploratory-Insights",
       "method": "matplotlib summary chart consolidating scripts/consolidate_exploratory_insights.py insight records, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/key_exploratory_hypothesis_validation_plan.png",
-      "sha256": "3cc18e39bd9d6a040c8af95689282e52d4a383cf3e164eed5fbaea9e567dfb78",
+      "sha256": "b42bd1cda154a372aa1d2f264c0a5ad9ae594e1eabcb38e36baff4ee2f1a68c0",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -510,12 +511,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-17-Key-Exploratory-Insights",
       "method": "matplotlib summary chart consolidating scripts/consolidate_exploratory_insights.py insight records, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/key_exploratory_insights_evidence_matrix.png",
-      "sha256": "1631d9b7cdbbbe90a9a53c635e5797c519e09a930a394e07e3b7eba2e902818d",
+      "sha256": "19328421991ab6bd2626e0d7d7f3556f7c2fdc10ea91c9224f46cf248db5b2bf",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -527,12 +528,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-17-Key-Exploratory-Insights",
       "method": "matplotlib summary chart consolidating scripts/consolidate_exploratory_insights.py insight records, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/key_exploratory_insights_theme_summary.png",
-      "sha256": "a4664e146b1f42839a679dea1b5af155e664891559c72d2bbf1e059e32467209",
+      "sha256": "104ec5ebaecda5646c54d4a46a16e45ad20352beff3a78d3703c2534b1b48c57",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -544,12 +545,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib boxplot of a numerical feature split by target class, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/monthly_charges_by_churn_boxplot.png",
-      "sha256": "188ee572c794a055b347468b58131953be4effb9c519af6414cc1d5a3383a4a8",
+      "sha256": "3495e62c5a6360c7889db0f6d52937334946dbb8b91d0d2851dc5cc03f388b64",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -561,12 +562,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by numerical-feature quantile bin, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/monthly_charges_churn_rate_by_quantile.png",
-      "sha256": "d9edc748c561d45ea71fde4c5977fa3f3ef8195f2c5e03fd5190e1a726bf6ba0",
+      "sha256": "1735e4867a99873a5dee2675ffebdd6a2b0083af6bf4d4fb5624b3dc7f629ce5",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -578,12 +579,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
       "method": "matplotlib histogram of a numerical feature's distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/monthly_charges_distribution_histogram.png",
-      "sha256": "fe1df0fe752b4843cc7a7229fb91a904822b0daa5faa2fca7204ef4a9f99a082",
+      "sha256": "d746104b74a719a1f66eefe2bed50c4c75587d7ffd7ea55f104b1e7ce86681e0",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -595,12 +596,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
       "method": "matplotlib boxplot highlighting IQR-based outlier candidates for a numerical feature, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/monthly_charges_iqr_boxplot.png",
-      "sha256": "8df061dba5f862b6c8957c94697e1680c2f1b2a533b43138f3bafb1497135cde",
+      "sha256": "5ca5585b67c15653947fde8591935882efa12e0fb112177e7ba9c2b9a8375b36",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -612,12 +613,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/monthly_charges_vs_total_charges_scatter.png",
-      "sha256": "2db82b1ba87502a4c8fb01ce29c7bb01459d14c6b8acef920cab00727a3d5d66",
+      "sha256": "e3928ff5267ca186b060fbfec9df3b145ec7cf1057dc2b207036fe559341b0fd",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -629,12 +630,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/multiple_lines_category_distribution.png",
-      "sha256": "197dd67333de6fdb03519f58b3d85607537be31a89abfae5937644d95fb60726",
+      "sha256": "0fc475df549fc28bd4eb199842856fc77b119ca8c828507206890e8df0bdf46b",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -646,12 +647,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/multiple_lines_churn_rate_by_category.png",
-      "sha256": "e677f4ce70208198c80f10a4bb35aed69b4976e362d0be3c48cbff123c820837",
+      "sha256": "b61d8cb7e69455c65f22410a5b7010726cec5744f66b9270c00c1ad63e1af75c",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -663,12 +664,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/online_backup_category_distribution.png",
-      "sha256": "062a41a72704a68232087c316b2ab73928934206d66d8d0dc90f32006cb6c391",
+      "sha256": "d5453e6347a12d5595048ab2e55da4b61fa13aecf08c18ad8950141d105e8079",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -680,12 +681,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/online_backup_churn_rate_by_category.png",
-      "sha256": "8b50bdd1c45874e477f7c9fc7cbab094f280c09867bd2f6eb7677b9b592fa4a7",
+      "sha256": "dc912472b35cede08781daa652862022eb133d0b87cbd405763928e3a7d69a2a",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -697,12 +698,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/online_security_category_distribution.png",
-      "sha256": "96b99ca0e507c9c547c8c174fde6d4a37702c2e2d86c44716ded5df25b7b30a4",
+      "sha256": "5ad16a4dbf64c68e94530c0bc4a4579ce2f164086c640529336fc7d79563816e",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -714,12 +715,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/online_security_churn_rate_by_category.png",
-      "sha256": "ee68f1c347ad2f53a9bd08c2ef3e74d107f5a634a6a99ae7b66493052b1be684",
+      "sha256": "150a4b29c1612c122a7eaad3e3cdb41b2577a69f5e13b28850427284fd81099c",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -731,12 +732,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/paperless_billing_category_distribution.png",
-      "sha256": "aae1da0dfb78a8951a0ef8805948e33f6e03d3ed1e5b2f15804f40d2bfc15fb3",
+      "sha256": "69843580420ff469de61b57c124642a6a70c74ac6f33250114ec5a586b5b5948",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -748,12 +749,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/paperless_billing_churn_rate_by_category.png",
-      "sha256": "32a29b30f0b992caed09c5d758754c3ddf83336da038a8527353b301d55449aa",
+      "sha256": "eb1e2f47da87a4d0eb8da8be968149b7081007ba02258c092366e268d36fa5de",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -765,12 +766,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/partner_category_distribution.png",
-      "sha256": "c414ba1fe1b9e26349c06b60095047653807a9d60d9a3a2b4bd611742395c09b",
+      "sha256": "9863b06b1f801411765698bb15a02bc658c630e4e966cbda1fa17d9c3fae1098",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -782,12 +783,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/partner_churn_rate_by_category.png",
-      "sha256": "6f7194500a95a5951c261356490b687f7d90f6ed7dbc38b8c1f2074a2dfa3ad5",
+      "sha256": "1333173d87060bf8c4094ade46a2b131558a0aa75d21d383180747ebc2905e25",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -799,12 +800,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/payment_method_category_distribution.png",
-      "sha256": "f57cf858511c99bf02ef113b213dbb64d06193c86a75f2315480b750d35a1813",
+      "sha256": "cadfbd19c03a4e79c444e3d1421666855dd3bc0991c92c992cd7a7d027a34162",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -816,12 +817,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/payment_method_churn_rate_by_category.png",
-      "sha256": "44ee0a631ef994c0ed98c5abfad5e7770fb46374662767fdd716d2daada5f3b3",
+      "sha256": "0a256315adadd2540f74f7a74ff0d9a7360efc178cda969cb5a9025d93d4e613",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -833,12 +834,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/phone_service_category_distribution.png",
-      "sha256": "644b1f9c7fa5322af20a88bde5d1c4b6cc4ffbf046636412ea0dcf7f182f29de",
+      "sha256": "cdeb3be1fd493daafba47b991aa1dbc3fecb83304c064b79d8b5f845cc4fe070",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -850,12 +851,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/phone_service_churn_rate_by_category.png",
-      "sha256": "a40dc72f7f34d2686be09de1e2a35b4c5a0f8fc383b6a5f17b47c5ebb14f2bd6",
+      "sha256": "c382bc47669d96011a87426fbc80d6f2520cd32cceb12b4884aebb4d8241a2c2",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -867,12 +868,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib heatmap of a pairwise categorical contingency table, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/phone_service_vs_multiple_lines_contingency_heatmap.png",
-      "sha256": "8365861065313b7ca3536c0762736dd42e33ee7561f64944b47f780618f7d84f",
+      "sha256": "665c9410b473bbd6d533ea5f168877abf24330a219bc76538ea0055ffadf96f7",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -884,12 +885,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-15-Potential-Data-Leakage",
       "method": "matplotlib governance matrix or summary chart consolidating scripts/analyze_leakage.py audit output, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/potential_data_leakage_disposition_summary.png",
-      "sha256": "07522fb3edb7fa9322733382b099c3f0ee45d1e5fa353928623e74c97e1267c1",
+      "sha256": "fbffeefa34b0fd04062a3286e71e74f624588a1369a7c0c06401cfccc82862c9",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -901,12 +902,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-15-Potential-Data-Leakage",
       "method": "matplotlib governance matrix or summary chart consolidating scripts/analyze_leakage.py audit output, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/potential_data_leakage_field_audit_matrix.png",
-      "sha256": "3ab68d8b1852055408140ced8dbbc9d306174952bdc0a16184a3de4156451fd3",
+      "sha256": "3ef9c8108557101411e369f163338ca821acab5dd3d985e34d3228bd0077c739",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -918,12 +919,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-15-Potential-Data-Leakage",
       "method": "matplotlib governance matrix or summary chart consolidating scripts/analyze_leakage.py audit output, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/potential_data_leakage_transformation_audit_matrix.png",
-      "sha256": "385782216143d7b149a2867f6f9bb7eb7c5f2d7872faecded3eb2e719a7a9881",
+      "sha256": "6a5b4473e61d5a783de653288f10b0834779e0249c1db3f24c216857708a79be",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -935,12 +936,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-18-Preparation-Decisions",
       "method": "matplotlib summary chart consolidating scripts/record_preparation_decisions.py decisions, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/preparation_decisions_execution_plan.png",
-      "sha256": "e94cf0fb826feef33c768a0c3fb82e923c693129980b1a26bae071deff3212e2",
+      "sha256": "58a161997fcd4187281a01d9d0cd80abe99d29c978a836c52d36a082ea3be0a6",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -952,12 +953,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-18-Preparation-Decisions",
       "method": "matplotlib summary chart consolidating scripts/record_preparation_decisions.py decisions, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/preparation_decisions_scope_matrix.png",
-      "sha256": "7682cc4b37b008262bdf1dd955b7a3be62921d98806eda9e5f781e986aa21c39",
+      "sha256": "64f9141179518710f0adc526a3cae0c63845e4a95434b8bc174866601d8626b8",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -969,12 +970,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-18-Preparation-Decisions",
       "method": "matplotlib summary chart consolidating scripts/record_preparation_decisions.py decisions, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/preparation_decisions_status_summary.png",
-      "sha256": "7160376ae57f3edca9eb6faca2ff5d206d8d4711dc94493d1ee255eb3eecbd5b",
+      "sha256": "cebd21bdf9209069528d3e2e97037277c1b46a618909da3e253fecc32d428041",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -986,12 +987,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/senior_citizen_category_distribution.png",
-      "sha256": "9c764843786b39ce60231993588795b5ba8c4836e6dd487b025d14c9b268e285",
+      "sha256": "1f5bc7a5e5db41875737827200cdd83a1c98bd5797f0dfa4c3e6495cb1484a97",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1003,12 +1004,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/senior_citizen_churn_rate_by_category.png",
-      "sha256": "b1b186feaf09230ece0051953caa57190fe11609dc52e296d1d6ad0201897936",
+      "sha256": "5403833072e56a25ee4380868c5b45ebcf1c2a60f844af51a6a8b6da6cab5808",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1020,12 +1021,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/streaming_movies_category_distribution.png",
-      "sha256": "4f35040458b27ca9aa8967b20885ee6030afecedb0dbb7f3a692a2d4193596ef",
+      "sha256": "f21a598b5b8afed1ff9786ed32017b130e653e0225a15f8e585332c21430c6ec",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1037,12 +1038,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/streaming_movies_churn_rate_by_category.png",
-      "sha256": "6a357246ceb49893ddf9dea0c2be1d4117706475238f8a895c9075213b82c4ee",
+      "sha256": "992257dc2ba187b348c5b7d810be709d571366152032c1a55a0ef59d915a1913",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1054,12 +1055,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/streaming_tv_category_distribution.png",
-      "sha256": "a0da5b3e19c9e290f16994cf37c9734bcad89b84d3f8a7e20a28da0f7f887235",
+      "sha256": "ad44e167d00c31c41fb2b5d5b937f8aee2557b261f6deab5bd74a4d93167b003",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1071,12 +1072,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/streaming_tv_churn_rate_by_category.png",
-      "sha256": "66a85b9472dfbf88b0d61efa6a4cc1fbe386ba1977dc34ddef300410d505d643",
+      "sha256": "2b48f1a7b4e3d96ee394ac61327bb484f2f57fb1d91c1d3f694852a3da920656",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1088,12 +1089,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-12-Categorical-Feature-Exploration",
       "method": "matplotlib bar chart of a categorical feature's value distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tech_support_category_distribution.png",
-      "sha256": "b81dda88ae386fc00ae03cdfa3e6dc434b3269da88be255dc129a5dc22190e91",
+      "sha256": "f74e1c53ea442ed06f64f5ad82bda135d3e308f71f2fee647609b435762b6f87",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1105,12 +1106,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by categorical-feature value, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tech_support_churn_rate_by_category.png",
-      "sha256": "2859a4eda9140e559590749c150342b64f7e858e24a62fec370def197829302d",
+      "sha256": "bbe77ef509687adf37d4e06e123c5c4f1254497325a4ff98a92a9efee3352a05",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1122,12 +1123,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib boxplot of a numerical feature split by target class, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_by_churn_boxplot.png",
-      "sha256": "862c3d9e978a8602945871a637e6054cf01c931a26f0973770958ab3a7dd6de3",
+      "sha256": "dc6d95b6aa9c7c70a5506110ff64c6e4b6dd79dcf7024d1bd6f0f509efb91a73",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1139,12 +1140,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by numerical-feature quantile bin, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_churn_rate_by_quantile.png",
-      "sha256": "d1558eea475326a308a2e5ee6188e098981de650aa05c353e99b8a18d303e3ff",
+      "sha256": "641ab8c985c83a164eb3e2599b0510fbeb8757529463a906109eba79e69c29c4",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1156,12 +1157,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
       "method": "matplotlib histogram of a numerical feature's distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_distribution_histogram.png",
-      "sha256": "eb0f565be4b240f8887437c5759f4206b59e2c3d0cbb540df0f2c082abe9a161",
+      "sha256": "55cb316ce40532fe87513e87a0d7b13bb99a7a2a80d238712a2c8eae45a06019",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1173,12 +1174,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
       "method": "matplotlib boxplot highlighting IQR-based outlier candidates for a numerical feature, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_iqr_boxplot.png",
-      "sha256": "54dc0a2dd018550ac4e036abd0b5b9e7b3f6b08b08b6c24c4716ca944a78cc58",
+      "sha256": "be191fa53c8446c071d64849aa5205ca24d8ae48d12898230c6a2a03dacfd37d",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1190,12 +1191,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_monthly_charges_product_vs_total_charges_scatter.png",
-      "sha256": "807c7f5e21b1d036378187b498e1b2156f4071e4b59ba7a96e84ba0f41b9be4e",
+      "sha256": "bbea8b5ff44d7baaff8e14bdb9e64779ed645f75764632bd7e09aba08e14cd05",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1207,12 +1208,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_vs_monthly_charges_scatter.png",
-      "sha256": "69b6ce63a55d7f0cd99cf4f223d97c9668d27991b42ff1b2f2f63486bfa97a00",
+      "sha256": "f69d9407e5975341a5bbf454936ddb9e852907ae4f1515d87608bfa54495508a",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1224,12 +1225,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-13-Feature-Relationships",
       "method": "matplotlib scatter plot of a numerical-feature relationship, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/tenure_vs_total_charges_scatter.png",
-      "sha256": "7a933617ec62fd21eafd5a20c39bcf26015b72f84d6e00cfc851064d3697b576",
+      "sha256": "b1b5cb6b3870a4c713dc06ad492866b959e3766a70281120be4619fea545fd21",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1241,12 +1242,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib boxplot of a numerical feature split by target class, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/total_charges_by_churn_boxplot.png",
-      "sha256": "00c2304091ae55d7c11dd76e1dc45fa89770f16f9445713405bf6a9d9752dbf7",
+      "sha256": "6ce60284ab533917c8ebb89652d2c83b1871ca12c7c3339cf9509dbe489cac70",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1258,12 +1259,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-14-Feature-to-Target-Relationships",
       "method": "matplotlib bar chart of churn rate by numerical-feature quantile bin, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/total_charges_churn_rate_by_quantile.png",
-      "sha256": "21af6c81a9e64d8ca3d05af1c781fa374d3559882c0b5090e2718ff029fd1553",
+      "sha256": "ad6c39f9334e62f42a270b619055bf16e7d7a220ec6bf3d2ec335d27e29e14c9",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1275,12 +1276,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
       "method": "matplotlib histogram of a numerical feature's distribution, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/total_charges_distribution_histogram.png",
-      "sha256": "6c00f2c9c5fe01b8ffee4db28949b09bd92249237f869b731ef7eeaff206a046",
+      "sha256": "80fcee876e4fc584b53aeb8d65c7952c1599b8e7337e3cdd1753e04c92a867c2",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     },
     {
@@ -1292,12 +1293,12 @@
       "source_artifact_or_data_reference": "notebooks/01_data_understanding_and_exploration.ipynb#Section-11-Numerical-Feature-Exploration",
       "method": "matplotlib boxplot highlighting IQR-based outlier candidates for a numerical feature, generated directly in the notebook cell.",
       "relative_asset_path": "docs/images/total_charges_iqr_boxplot.png",
-      "sha256": "224219796c38b2b362a3705bd1c666e8b915fbc8f7775dc832867ce52ad78add",
+      "sha256": "e7c269486a34b1073c119a26fff3b1ddf2fd6f640602cdedc57244efe794b513",
       "public_suitability": true,
       "public_suitability_reason": "Aggregate statistical or distributional chart with no per-record identifiers; no customerID axis or row-level label is plotted.",
       "provenance": {
         "producer_notebook": "notebooks/01_data_understanding_and_exploration.ipynb",
-        "generation_mechanism": "matplotlib figure saved directly by a notebook cell; scripts/export_figures.py is an empty, unused 0-byte file and is not the producer."
+        "generation_mechanism": "matplotlib figure saved directly by a notebook cell."
       }
     }
   ]

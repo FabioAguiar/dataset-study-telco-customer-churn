@@ -1,0 +1,23 @@
+{
+  "schema_version": "source-contract.v1",
+  "dataset_slug": "telco-customer-churn",
+  "provider": "kaggle",
+  "handle": "blastchar/telco-customer-churn",
+  "version": 1,
+  "versioned_handle": "blastchar/telco-customer-churn/versions/1",
+  "dataset_url": "https://www.kaggle.com/datasets/blastchar/telco-customer-churn/versions/1",
+  "original_attribution": "IBM Sample Data Sets",
+  "source_license": "Data files © Original Authors",
+  "redistribution": "The raw file is not redistributed by this repository; it must be acquired from the pinned Kaggle version.",
+  "destination": "data/raw/telco-customer-churn",
+  "files": [
+    {
+      "filename": "WA_Fn-UseC_-Telco-Customer-Churn.csv",
+      "sha256": "88be4b93fbe0cc83421af1c503794c97c342eca914c1576db7c276e61d61358a",
+      "size_bytes": 977501,
+      "rows": 7043,
+      "columns": 21
+    }
+  ],
+  "verification_evidence": "The SHA-256 was recorded from the local acquisition and independently confirmed on 2026-09-27 by a forced anonymous kagglehub download of blastchar/telco-customer-churn/versions/1; the Kaggle API reported currentVersionNumber=1 and totalBytes=977501."
+}

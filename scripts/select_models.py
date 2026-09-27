@@ -1028,7 +1028,16 @@ def select_candidate_model(
     practical_tie_tolerance: float,
     simplicity_order: Sequence[str],
 ) -> dict[str, Any]:
-    """Select an eligible family with deterministic practical-tie handling."""
+    """Select an eligible family with deterministic practical-tie handling.
+
+    Candidates must beat the Dummy validation AP by more than the margin. The
+    eligible candidate with the highest validation AP is the leader. Every
+    other eligible candidate that is practically tied with the leader (see
+    :func:`detect_practical_tie`) joins the tie group, so the group may hold
+    more than two candidates. Within a tie group the ordered secondary
+    criteria are applied to all members at once; each criterion keeps only
+    the members at the best value, until one member remains.
+    """
 
     simplicity_rank = {family: index for index, family in enumerate(simplicity_order)}
     dummy_ap = float(dummy_validation_metrics["average_precision"])
@@ -1067,15 +1076,22 @@ def select_candidate_model(
     eligible.sort(
         key=lambda row: (-row["validation_average_precision"], row["model_id"])
     )
-    finalists = eligible[:2]
-    practical_tie = len(finalists) == 2 and detect_practical_tie(
-        finalists[0], finalists[1], tolerance=practical_tie_tolerance
-    )
+    # The practical-tie group is anchored on the validation-AP leader: it
+    # contains the leader plus EVERY eligible candidate that satisfies the
+    # pairwise tie rule against the leader (not only the runner-up). Anchoring
+    # on the leader keeps membership deterministic despite the rule not being
+    # transitive between non-leader candidates.
+    leader = eligible[0]
+    tie_group = [leader] + [
+        record
+        for record in eligible[1:]
+        if detect_practical_tie(leader, record, tolerance=practical_tie_tolerance)
+    ]
+    practical_tie = len(tie_group) > 1
     criteria: list[dict[str, Any]] = []
-    selected = finalists[0]
+    selected = leader
     rationale: str
     if practical_tie:
-        first, second = finalists
         comparisons = (
             ("lower_validation_brier_score", "validation_brier_score", "min"),
             ("lower_validation_log_loss", "validation_log_loss", "min"),
@@ -1085,44 +1101,62 @@ def select_candidate_model(
             ("lower_complexity", "simplicity_rank", "min"),
             ("stable_model_id", "model_id", "min"),
         )
+        remaining = list(tie_group)
         for criterion, field, direction in comparisons:
-            a, b = first[field], second[field]
-            winner: str | None = None
-            if isinstance(a, (float, int)) and isinstance(b, (float, int)):
-                if not math.isclose(float(a), float(b), rel_tol=0.0, abs_tol=1e-12):
-                    if direction == "min":
-                        winner = first["model_id"] if a < b else second["model_id"]
-                    else:
-                        winner = first["model_id"] if a > b else second["model_id"]
-            elif a != b:
-                winner = first["model_id"] if str(a) < str(b) else second["model_id"]
+            values = {record["model_id"]: record[field] for record in remaining}
+            if all(isinstance(value, (float, int)) for value in values.values()):
+                pick = min if direction == "min" else max
+                best = pick(float(value) for value in values.values())
+                survivors = [
+                    record
+                    for record in remaining
+                    if math.isclose(
+                        float(record[field]), best, rel_tol=0.0, abs_tol=1e-12
+                    )
+                ]
+            else:
+                best_text = min(str(value) for value in values.values())
+                survivors = [
+                    record for record in remaining if str(record[field]) == best_text
+                ]
             criteria.append(
                 {
                     "criterion": criterion,
-                    "first_value": _jsonable(a),
-                    "second_value": _jsonable(b),
-                    "winner": winner,
+                    "values": {key: _jsonable(value) for key, value in values.items()},
+                    "survivors": [record["model_id"] for record in survivors],
+                    "winner": survivors[0]["model_id"] if len(survivors) == 1 else None,
                 }
             )
-            if winner is not None:
-                selected = first if first["model_id"] == winner else second
+            remaining = survivors
+            if len(remaining) == 1:
                 break
+        selected = remaining[0]
         rationale = (
-            "The finalists were practically tied on validation Average Precision with "
-            "overlapping approximate CV intervals; deterministic calibration, stability, "
-            "interpretability, complexity, and stable-ID criteria were applied in order."
+            f"{len(tie_group)} eligible candidates formed a practical tie with the "
+            "validation Average Precision leader (difference within tolerance and "
+            "overlapping approximate CV intervals); deterministic calibration, "
+            "stability, interpretability, complexity, and stable-ID criteria were "
+            "applied in order across the whole tie group."
         )
     else:
         rationale = (
             "The selected candidate had the highest validation Average Precision among "
-            "eligible models without satisfying the practical-tie rule against the runner-up."
+            "eligible models and no other eligible candidate satisfied the practical-tie "
+            "rule against it."
         )
+    finalists = tie_group
     return {
         "dummy_average_precision": dummy_ap,
         "required_margin": float(dummy_average_precision_margin),
         "eligible_model_ids": [record["model_id"] for record in eligible],
         "candidate_eligibility": records,
         "finalists": [record["model_id"] for record in finalists],
+        "practical_tie_group": [record["model_id"] for record in tie_group],
+        "practical_tie_rule": (
+            "leader_anchored: every eligible candidate whose validation Average "
+            "Precision differs from the leader's by at most the tolerance and whose "
+            "approximate CV AP interval overlaps the leader's"
+        ),
         "practical_tie": bool(practical_tie),
         "practical_tie_tolerance": float(practical_tie_tolerance),
         "criteria_applied": criteria,
@@ -1130,6 +1164,62 @@ def select_candidate_model(
         "selected_model_family": selected["family"],
         "selection_rationale": rationale,
     }
+
+
+DEFERRED_OPERATION_DISPOSITIONS: frozenset[str] = frozenset(
+    {"performed", "rejected", "not_needed", "out_of_scope"}
+)
+
+
+def resolve_deferred_operations(
+    *,
+    deferred_operations: Sequence[str],
+    dispositions: Mapping[str, Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Close every operation deferred by preparation with an explicit disposition.
+
+    Each deferred operation must receive exactly one disposition from
+    :data:`DEFERRED_OPERATION_DISPOSITIONS` and a non-empty rationale. Missing,
+    unknown, or undeclared operations raise, so the model-selection stage
+    cannot leave a preparation deferral silently open.
+    """
+
+    declared = list(deferred_operations)
+    if len(set(declared)) != len(declared):
+        raise ModelSelectionContractError("Deferred operations must be unique.")
+    missing = [name for name in declared if name not in dispositions]
+    if missing:
+        raise ModelSelectionContractError(
+            f"Deferred operations without a final disposition: {missing}."
+        )
+    undeclared = sorted(set(dispositions) - set(declared))
+    if undeclared:
+        raise ModelSelectionContractError(
+            f"Dispositions reference undeclared deferred operations: {undeclared}."
+        )
+    records: list[dict[str, Any]] = []
+    for name in declared:
+        entry = dispositions[name]
+        disposition = entry.get("disposition")
+        if disposition not in DEFERRED_OPERATION_DISPOSITIONS:
+            raise ModelSelectionContractError(
+                f"Invalid disposition for {name!r}: {disposition!r}."
+            )
+        rationale = entry.get("rationale")
+        if not isinstance(rationale, str) or not rationale.strip():
+            raise ModelSelectionContractError(
+                f"Deferred operation {name!r} requires a rationale."
+            )
+        records.append(
+            {
+                "operation": name,
+                "disposition": disposition,
+                "rationale": rationale.strip(),
+                "evidence": _jsonable(entry.get("evidence")),
+                "source_decisions": list(entry.get("source_decisions", [])),
+            }
+        )
+    return records
 
 
 def _threshold_rows(
@@ -1331,6 +1421,7 @@ def build_model_selection_manifest(
     artifact_paths: Mapping[str, str],
     readiness: Mapping[str, Any],
     limitations: Sequence[str],
+    deferred_operation_dispositions: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the model-selection manifest payload."""
 
@@ -1357,6 +1448,10 @@ def build_model_selection_manifest(
         "test_partition_evaluated": False,
         "operational_validity": "unconfirmed",
     }
+    if deferred_operation_dispositions is not None:
+        payload["deferred_operation_dispositions"] = _deepcopy(
+            list(deferred_operation_dispositions)
+        )
     _validate_paths_recursively(payload)
     return payload
 

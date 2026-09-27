@@ -354,6 +354,33 @@ class PreparationDecisionReport:
         return blocked_split.empty
 
     @property
+    def is_ready_for_educational_snapshot_split(self) -> bool:
+        """Return whether a snapshot split is authorized for an educational benchmark.
+
+        Unlike :attr:`is_ready_for_split_execution`, which also requires every
+        external leakage-governance contract (scoring population, horizon,
+        inference-time availability) and therefore represents operational
+        readiness, this gate only requires an explicit snapshot decision
+        (``temporal_policy_status == "Resolved snapshot fallback"``) and no
+        blocked dataset-splitting decision. It never implies operational
+        validity.
+        """
+        if not self.is_structurally_valid:
+            return False
+        if not self.is_ready_for_deterministic_preparation:
+            return False
+        temporal_status = str(
+            self.split_policy.get("temporal_policy_status", "")
+        )
+        if temporal_status != "Resolved snapshot fallback":
+            return False
+        blocked_split = self.decisions.loc[
+            self.decisions["Status"].eq("Blocked")
+            & self.decisions["Domain"].eq("Dataset splitting")
+        ]
+        return blocked_split.empty
+
+    @property
     def is_ready_for_modeling(self) -> bool:
         if not self.is_ready_for_split_execution:
             return False
