@@ -2,14 +2,23 @@
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
-# Two dependency layers are kept deliberately separate:
+# Canonical environment contract of this Dataset Study:
 #
-# * The ranges below are the minimum versions the reusable modules are written
-#   against. They are NOT the environment that produced the study results.
-# * requirements/lock.txt (with the interpreter in .python-version) pins the
-#   exact environment used to execute the notebooks and serialize the model.
-#   The model bundle enforces those exact versions before deserialization.
+# * .python-version  exact CPython used for the canonical, reproducible run;
+# * pyproject.toml   declared (direct) dependencies, dependency groups, and
+#                    tool configuration — ranges, not a frozen snapshot;
+# * pylock.toml      machine-generated PEP 751 lock (universal: markers for
+#                    every platform) of the resolved direct and transitive
+#                    dependencies of the project plus the "study" group. Never
+#                    edit it by hand; regenerate it (uv from the "dev" group)
+#                    with the command recorded in its header:
+#                      uv pip compile pyproject.toml --group study --universal \
+#                        --python-version "$(cat .python-version)" \
+#                        --format pylock.toml -o pylock.toml
+#                    Existing pins are kept unless --upgrade is passed.
+#                    Install it with: python -m pip install -r pylock.toml
 #
+# The model bundle enforces the locked versions before deserialization.
 # No license is declared: the repository does not currently grant one
 # (see README, "License").
 
@@ -18,18 +27,23 @@ name = "dataset-study-telco-customer-churn"
 version = "0.1.0"
 description = "Reproducible Telco Customer Churn dataset study"
 readme = "README.md"
-requires-python = ">=3.10"
+# tomllib (stdlib since 3.11) reads pylock.toml in scripts/runtime_contract.py.
+requires-python = ">=3.11"
 dependencies = [
     "joblib>=1.3",
     "kagglehub>=0.3",
     "numpy>=1.24",
+    # PEP 508 marker evaluation of pylock.toml in scripts/runtime_contract.py.
+    "packaging>=23.0",
     "pandas>=2.0",
     # l1_ratio replaces the LogisticRegression penalty parameter from 1.8 on;
     # older releases would silently ignore l1_ratio=1.0 and fit an L2 model.
     "scikit-learn>=1.8",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
+# Executing and editing the notebooks (matplotlib is used only by notebooks;
+# nbformat/nbconvert execute them and Notebook 04 reads Notebook 03 outputs).
 notebook = [
     "ipykernel>=6.0",
     "jupyterlab>=4.0",
@@ -37,9 +51,20 @@ notebook = [
     "nbconvert>=7.0",
     "nbformat>=5.9",
 ]
+# Test suite (tests/test_study_integrity.py reads notebooks with nbformat).
 test = [
     "nbformat>=5.9",
     "pytest>=8.0",
+]
+# Complete environment of the canonical run; this is the group locked in
+# pylock.toml together with the project dependencies.
+study = [
+    { include-group = "notebook" },
+    { include-group = "test" },
+]
+# Tooling that maintains the environment contract (not part of the lock).
+dev = [
+    "uv>=0.12",
 ]
 
 [tool.setuptools.packages.find]

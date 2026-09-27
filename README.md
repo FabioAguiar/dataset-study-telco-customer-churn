@@ -315,9 +315,19 @@ Pinned source (contracts/source.json) → SHA-256 verification
 
 ## Reproducibility
 
-### Canonical runtime
+### Environment contract
 
-The environment that produced every artifact is declared once: the interpreter in [`.python-version`](.python-version) and every package in [`requirements/lock.txt`](requirements/lock.txt). Notebooks 01–04 refuse to run in any other environment (`scripts/runtime_contract.py`), and the model bundle records the same versions:
+Like every Dataset Study, the environment is defined by three root files with separate roles:
+
+| File | Role | Maintained by |
+|---|---|---|
+| [`.python-version`](.python-version) | Exact CPython of the canonical run (`X.Y.Z`) | Hand, when the study is deliberately re-run on a new interpreter |
+| [`pyproject.toml`](pyproject.toml) | Project metadata, `requires-python`, direct dependencies (ranges), dependency groups (`notebook`, `test`, `study`, `dev`) | Hand |
+| [`pylock.toml`](pylock.toml) | PEP 751 lock of every resolved direct and transitive dependency of the project plus the `study` group; universal (platform markers, wheels and sdists with SHA-256) | Generated only |
+
+There is no other dependency list. Scripts and tests derive the canonical versions from these files (`scripts/runtime_contract.py`). Versions recorded inside artifacts (manifests, bundle) are evidence of the executed run, checked against the contract by tests, never a configuration source. Notebooks 01–04 refuse to run in any other environment, and the model bundle requires the same versions before deserialization.
+
+The executed run recorded these versions; the table is derived from `.python-version` and `pylock.toml` and is checked by `tests/test_study_integrity.py`:
 
 | Component | Version |
 |---|---:|
@@ -328,18 +338,37 @@ The environment that produced every artifact is declared once: the interpreter i
 | numpy | 2.5.3 |
 | scipy | 1.18.1 |
 
-The version ranges in `pyproject.toml` are the minimums the reusable modules are written against; they are not the study environment. Only the lock reproduces the results and can load the serialized model.
+Tools tested with this contract: `uv 0.12.19` generates the lock, and `pip 26.2.1` installs it (`pip install -r pylock.toml`; pip labels pylock support experimental). The canonical run executed on Linux aarch64. The lock carries wheels for other platforms, but only this platform has been executed.
 
-### Environment setup
+The lock is regenerated, never edited, with the command recorded in its header (install the `dev` group to get `uv`). Existing pins are kept unless `--upgrade` is passed deliberately:
 
 ```bash
-python3.13 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements/lock.txt
-python -m pip install --no-deps -e .
+uv pip compile pyproject.toml --group study --universal \
+  --python-version "$(cat .python-version)" --format pylock.toml -o pylock.toml
 ```
 
-Keep the environment activated when running notebooks: the Jupyter `python3` kernel starts `python` from `PATH`, and the runtime gate stops a notebook that is running on another interpreter.
+### Environment lifecycle
+
+```bash
+# create (use the interpreter named in .python-version)
+"python$(cut -d. -f1,2 .python-version)" -m venv .venv
+source .venv/bin/activate
+python -m pip install "pip>=26.2"
+
+# install the locked environment and the project
+python -m pip install -r pylock.toml
+python -m pip install --no-deps -e .
+
+# verify the environment against .python-version and every locked package
+python -m pip check
+python -m scripts.runtime_contract
+
+# remove the environment (data, artifacts, notebooks, and figures are untouched)
+deactivate
+rm -rf .venv
+```
+
+Keep the environment activated when running notebooks: the Jupyter `python3` kernel starts `python` from `PATH`, and the runtime gate stops a notebook that runs on another interpreter.
 
 ### Reproducing the study
 
@@ -390,11 +419,11 @@ python -m compileall -q scripts
 ├── data/                 Raw and processed data areas (not versioned)
 ├── docs/images/          Figures produced by Notebook 01 and their hash index
 ├── notebooks/            Executed analytical notebooks 01–05
-├── requirements/         Exact environment lock
 ├── scripts/              Reusable validation, analysis, preparation, selection, and inference logic
 ├── tests/                Unit tests and study-integrity gates
-├── .python-version       Canonical interpreter version
-├── pyproject.toml        Package metadata and minimum dependency ranges
+├── .python-version       Exact interpreter of the canonical run
+├── pyproject.toml        Metadata, requires-python, dependencies, dependency groups
+├── pylock.toml           Generated PEP 751 lock of the full environment
 └── README.md
 ```
 
@@ -411,7 +440,7 @@ The workflow records and validates:
 - the selected model, frozen hyperparameters, and threshold origin;
 - a final disposition for every deferred operation;
 - the final-test access count;
-- runtime versions against the lock;
+- the installed environment and recorded runtime versions against `.python-version` and `pylock.toml`;
 - the model-state fingerprint and trusted-source confirmation before deserialization.
 
 ## Limitations and readiness

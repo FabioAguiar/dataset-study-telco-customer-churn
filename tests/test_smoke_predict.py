@@ -234,8 +234,12 @@ def _write_artifact_set(
 
 # A. Runtime
 
+# Deliberately fictitious versions: these tests exercise the comparator only.
+# The canonical runtime lives in .python-version and pylock.toml.
+SYNTHETIC_RUNTIME = {"python": "4.2.7", "pandas": "7.1.3", "scikit_learn": "8.4.0", "joblib": "5.0.2"}
+
 def test_runtime_exact_compatible() -> None:
-    versions = {"python": "3.13.13", "pandas": "3.0.5", "scikit_learn": "1.9.0", "joblib": "1.5.3"}
+    versions = dict(SYNTHETIC_RUNTIME)
     report = smoke.validate_runtime_compatibility(versions, observed_versions=versions, mode="exact")
     assert report.compatible
     assert all(component.status == "compatible" for component in report.components)
@@ -247,8 +251,8 @@ def test_runtime_load_safe_compatible() -> None:
 
 
 def test_runtime_python_patch_difference_warns_and_is_safe() -> None:
-    expected = {"python": "3.13.13", "pandas": "3.0.5", "scikit_learn": "1.9.0", "joblib": "1.5.3"}
-    observed = dict(expected, python="3.13.5")
+    expected = dict(SYNTHETIC_RUNTIME)
+    observed = dict(expected, python="4.2.1")
     with pytest.warns(smoke.RuntimeCompatibilityWarning):
         report = smoke.validate_runtime_compatibility(expected, observed_versions=observed, mode="load_safe")
     assert report.compatible
@@ -257,10 +261,10 @@ def test_runtime_python_patch_difference_warns_and_is_safe() -> None:
 
 @pytest.mark.parametrize(
     ("component", "observed"),
-    [("python", "3.12.9"), ("pandas", "3.0.4"), ("scikit_learn", "1.8.0"), ("joblib", "1.5.2")],
+    [("python", "4.1.9"), ("pandas", "7.1.2"), ("scikit_learn", "8.3.0"), ("joblib", "5.0.1")],
 )
 def test_runtime_load_safe_blocks_material_mismatch(component: str, observed: str) -> None:
-    expected = {"python": "3.13.13", "pandas": "3.0.5", "scikit_learn": "1.9.0", "joblib": "1.5.3"}
+    expected = dict(SYNTHETIC_RUNTIME)
     actual = dict(expected)
     actual[component] = observed
     with pytest.raises(smoke.RuntimeCompatibilityError) as exc:
@@ -271,8 +275,8 @@ def test_runtime_load_safe_blocks_material_mismatch(component: str, observed: st
 
 
 def test_runtime_exact_reports_without_raising_by_default() -> None:
-    expected = {"python": "3.13.13", "pandas": "3.0.5", "scikit_learn": "1.9.0", "joblib": "1.5.3"}
-    report = smoke.validate_runtime_compatibility(expected, observed_versions=dict(expected, pandas="2.2.3"), mode="exact")
+    expected = dict(SYNTHETIC_RUNTIME)
+    report = smoke.validate_runtime_compatibility(expected, observed_versions=dict(expected, pandas="6.9.0"), mode="exact")
     assert not report.compatible
     assert _component(report, "pandas").status == "incompatible"
 
